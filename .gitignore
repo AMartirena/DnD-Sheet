@@ -17,6 +17,10 @@ coincalc-index.min.js
 .env.local
 .env.*.local
 
+# Local Prisma database
+prisma/*.db
+prisma/*.db-journal
+
 # Debug
 npm-debug.log*
 yarn-debug.log*

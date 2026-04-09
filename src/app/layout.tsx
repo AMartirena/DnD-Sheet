@@ -1,5 +1,23 @@
 import type { Metadata } from "next";
+import { Crimson_Text, IM_Fell_English } from "next/font/google";
 import "./globals.css";
+
+const crimsonText = Crimson_Text({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-crimson-text",
+  display: "swap",
+});
+
+const imFellEnglish = IM_Fell_English({
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+  variable: "--font-im-fell-english",
+  display: "swap",
+  adjustFontFallback: false,
+});
 
 export const metadata: Metadata = {
   title: "D&D 5e — Ficha de Personagem",
@@ -8,14 +26,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body>{children}</body>
+    <html lang="pt-BR" className={`${crimsonText.variable} ${imFellEnglish.variable}`}>
+      <body className="font-serif">{children}</body>
     </html>
   );
 }
