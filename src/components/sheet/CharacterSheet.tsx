@@ -15,26 +15,25 @@ export function CharacterSheet() {
 
   return (
     <div
-      className="max-w-[960px] mx-auto rounded-sm border-[3px] border-dnd-border p-7"
+      className="mx-auto w-full max-w-[960px] overflow-hidden rounded-sm border-[3px] border-dnd-border p-3 sm:p-5 md:p-7"
       style={{
         background: "linear-gradient(160deg,#f9f0d0 0%,#f4e8c1 40%,#ecddb0 100%)",
         boxShadow: "0 0 0 6px #5a3e2b, 0 0 0 9px #d4bc7a, 0 20px 60px rgba(0,0,0,0.8)",
       }}
     >
       {/* Sheet header */}
-      <div className="text-center border-b-[3px] border-double border-dnd-border pb-4 mb-5 relative">
-        <div className="font-display text-[11px] tracking-[4px] uppercase text-dnd-red mb-0.5">
+      <div className="mb-5 border-b-[3px] border-double border-dnd-border pb-4 text-center">
+        <div className="font-display text-[9px] tracking-[3px] uppercase text-dnd-red sm:text-[11px] sm:tracking-[4px] mb-0.5">
           Dungeons &amp; Dragons
         </div>
-        <div className="font-display text-[26px] text-ink tracking-wide">
+        <div className="font-display text-[20px] text-ink tracking-wide sm:text-[24px] md:text-[26px]">
           Ficha de Personagem — 5ª Edição
         </div>
-        <div className="text-dnd-gold text-[12px] tracking-[8px] mt-1 opacity-70">— ✦ ✦ ✦ —</div>
+        <div className="mt-1 text-[10px] tracking-[5px] text-dnd-gold opacity-70 sm:text-[12px] sm:tracking-[8px]">— ✦ ✦ ✦ —</div>
         {/* Reset button */}
         <button
           onClick={() => { if (confirm("Resetar ficha? Todos os dados serão apagados.")) resetSheet(); }}
-          className="absolute top-0 right-0 text-[9px] tracking-wide uppercase text-ink-muted border border-dnd-border/50
-                     rounded px-2 py-1 hover:border-dnd-red hover:text-dnd-red transition-colors"
+          className="mt-3 inline-flex rounded border border-dnd-border/50 px-2 py-1 text-[9px] uppercase tracking-wide text-ink-muted transition-colors hover:border-dnd-red hover:text-dnd-red sm:absolute sm:right-0 sm:top-0 sm:mt-0"
         >
           ↺ Resetar
         </button>
@@ -42,7 +41,7 @@ export function CharacterSheet() {
 
       <CharacterHeader />
       <Divider />
-      <div className="grid gap-10 lg:grid-cols-[minmax(240px,280px)_minmax(0,1fr)] lg:items-start">
+      <div className="grid gap-6 md:gap-8 lg:grid-cols-[minmax(240px,280px)_minmax(0,1fr)] lg:items-start lg:gap-10">
         <div className="space-y-5">
           <AttributesSection />
           <ProficienciesSection />
@@ -62,7 +61,7 @@ export function CharacterSheet() {
       </div>
 
       {/* Footer */}
-      <div className="text-center text-[10px] text-ink-muted font-serif italic tracking-wide mt-4">
+      <div className="mt-4 text-center font-serif text-[9px] italic tracking-wide text-ink-muted sm:text-[10px]">
         D&amp;D 5ª Edição — Ficha Digital Interativa • Dados salvos automaticamente no navegador
       </div>
     </div>
