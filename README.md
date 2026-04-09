@@ -29,7 +29,7 @@ O projeto agora combina estado local no navegador para a ficha ativa com persist
 - TypeScript
 - Tailwind CSS
 - Zustand com persistencia local da ficha ativa
-- Prisma 6 + SQLite
+- Prisma 6 + PostgreSQL
 - Zod para validacao de payloads
 - bcryptjs para hash de senha
 - jose para sessao via cookie JWT
@@ -46,14 +46,14 @@ Instalacao e desenvolvimento:
 
 ```bash
 npm install
-npx prisma migrate dev
+npm run db:migrate:dev
 npm run dev
 ```
 
 Variaveis de ambiente:
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/dnd_sheet?schema=public"
 AUTH_SECRET="troque-por-um-segredo-longo"
 ```
 
@@ -371,7 +371,7 @@ Persistencia:
 
 - chave atual: `dnd-sheet-storage`
 - armazenamento local: `localStorage`
-- armazenamento remoto: SQLite via Prisma
+- armazenamento remoto: PostgreSQL via Prisma
 - sincronizacao remota: endpoints em `src/app/api/sheets/`
 
 ### Fluxo de persistencia
@@ -497,7 +497,7 @@ Qualquer novo campo persistido deve ser refletido em:
 
 - o projeto agora combina persistencia local da ficha ativa com persistencia remota por usuario
 - a autenticacao atual e proprietaria e baseada em email, senha e cookie JWT
-- o banco local de desenvolvimento usa SQLite via Prisma
+- o banco local de desenvolvimento e producao usa PostgreSQL via Prisma
 - o Prisma esta fixado na linha 6.x para manter compatibilidade com a configuracao atual do schema
 - varias interfaces usam texto livre para preservar flexibilidade de mesa
 - as secoes expansivas usam estado local de abertura e dados persistidos no store
@@ -520,6 +520,37 @@ Validacao manual recomendada da segunda etapa:
 4. trocar para outra ficha e voltar
 5. excluir uma ficha
 6. sair e entrar novamente
+
+## Deploy no Railway
+
+O projeto esta preparado para ser hospedado no Railway com PostgreSQL.
+
+### Servicos necessarios
+
+1. criar um projeto no Railway
+2. adicionar um servico PostgreSQL
+3. adicionar o servico da aplicacao apontando para este repositorio
+4. vincular a variavel `DATABASE_URL` fornecida pelo PostgreSQL ao servico web
+5. configurar `AUTH_SECRET` com um valor longo e aleatorio
+
+### Comandos de deploy
+
+O repositorio inclui suporte para deploy com:
+
+- build padrao do Next.js
+- migracao via `prisma migrate deploy`
+- runtime via `next start`
+
+Se quiser configurar manualmente no Railway:
+
+- Build Command: `npm run build`
+- Start Command: `npm run railway:start`
+
+### Observacoes do Railway
+
+- SQLite nao e apropriado aqui porque o filesystem do host nao deve ser tratado como banco persistente
+- o `output: "standalone"` do Next ajuda a gerar um build mais enxuto para o deploy
+- antes do primeiro acesso, o Railway vai aplicar as migrations na inicializacao do servico web
 
 ## Licenca
 
