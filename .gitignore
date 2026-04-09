@@ -7,6 +7,10 @@ node_modules/
 .next/
 out/
 build/
+*.tsbuildinfo
+
+# Temporary local inspection files
+coincalc-index.min.js
 
 # Env files
 .env
