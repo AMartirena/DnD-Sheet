@@ -1,0 +1,155 @@
+// ─── Core attribute keys ───────────────────────────────────────────────────
+export type AttrKey = "str" | "dex" | "con" | "int" | "wis" | "cha";
+
+// ─── Proficiency level for skills ──────────────────────────────────────────
+export type ProfLevel = 0 | 1 | 2 | 3; // none | half | full | expert
+
+// ─── Character class entry (supports multiclass) ──────────────────────────
+export interface CharClass {
+  id: string;
+  name: string;
+  subclass: string;
+  level: number;
+  hitDie: string; // e.g. "d10"
+}
+
+// ─── Armor / shield entry ─────────────────────────────────────────────────
+export interface ArmorEntry {
+  id: string;
+  name: string;
+  type: string;
+  bonusCA: number;
+  maxDex?: number; // Maximum DEX bonus for medium armor
+  minStr?: number;
+  stealthDisadv?: boolean;
+  equipped: boolean;
+}
+
+// ─── Attack entry ─────────────────────────────────────────────────────────
+export type DamageType =
+  | "Cortante" | "Perfurante" | "Contundente"
+  | "Fogo" | "Gelo" | "Raio" | "Ácido" | "Veneno"
+  | "Necrótico" | "Radiante" | "Psíquico" | "Trovão" | "Força";
+
+export type AttackAttr = "FOR" | "DES" | "CON" | "INT" | "SAB" | "CAR" | "Feitiço";
+
+export type ArmorProfType = "leves" | "medias" | "pesadas" | "escudos";
+export type WeaponProfType = "simples" | "marciais";
+
+export interface AttackEntry {
+  id: string;
+  name: string;
+  attribute: AttackAttr;
+  bonusExtra: number;
+  damage: string;
+  damageType: DamageType;
+  range: string;
+  properties: string;
+  notes: string;
+}
+
+// ─── Racial ASI map ───────────────────────────────────────────────────────
+export type RacialASI = Partial<Record<AttrKey, number>>;
+
+export interface RaceData {
+  label: string;
+  asi: RacialASI;
+  speed?: number;
+  traits: string;
+  source: string;
+}
+
+export interface BackgroundData {
+  label: string;
+  source: string;
+  bonuses: string;
+  featureName: string;
+  featureDescription: string;
+}
+
+// ─── Death saves ──────────────────────────────────────────────────────────
+export interface DeathSaves {
+  successes: [boolean, boolean, boolean];
+  failures:  [boolean, boolean, boolean];
+}
+
+export interface ProficienciesState {
+  armor: Record<ArmorProfType, boolean>;
+  weapons: Record<WeaponProfType, boolean>;
+  custom: string;
+}
+
+export type CoinType = "cp" | "sp" | "ep" | "gp" | "pp";
+
+export interface CurrencyState {
+  cp: number;
+  sp: number;
+  ep: number;
+  gp: number;
+  pp: number;
+}
+
+export interface TraitEntry {
+  id: string;
+  ownerClassId?: string;
+  title: string;
+  description: string;
+}
+
+// ─── Full character state ─────────────────────────────────────────────────
+export interface CharacterState {
+  // Identity
+  name: string;
+  playerName: string;
+  raceKey: string;
+  backgroundKey: string;
+  background: string;
+  alignment: string;
+
+
+  // Classes
+  classes: CharClass[];
+
+  // Attributes (base scores set by player, racial bonus added on top)
+  attrs: Record<AttrKey, number>;
+
+  // Saving throw proficiencies
+  savingThrowProfs: Record<AttrKey, boolean>;
+
+  // Skill proficiencies
+  skillProfs: Record<number, ProfLevel>;
+
+  // Combat
+  hpMax: number;
+  hpCurrent: number;
+  hpTemp: number;
+  hitDiceCurrent: string;
+  speed: number;
+  initiativeBonus: number; // manual override on top of DEX mod
+  deathSaves: DeathSaves;
+
+  // Armor
+  armors: ArmorEntry[];
+
+  // Attacks
+  attacks: AttackEntry[];
+
+  // Proficiencies
+  proficiencies: ProficienciesState;
+
+  // Currency
+  coins: CurrencyState;
+
+  // Notes
+  features: string;
+  equipment: string;
+  abilities: string;
+  inventory: string;
+  bonusActions: TraitEntry[];
+  reactions: TraitEntry[];
+  subclassPanels: string[];
+  subclassTraits: TraitEntry[];
+  spellcastingAbility: AttrKey | "";
+  spellSaveDC: number; // calculated
+  spellAttackBonus: number; // calculated
+}
