@@ -1,6 +1,6 @@
 # D&D 5e - Ficha de Personagem Digital
 
-Aplicacao web para montar e acompanhar fichas de personagem de Dungeons & Dragons 5a Edicao, com foco em uso de mesa, persistencia local e edicao rapida.
+Aplicacao web para montar e acompanhar fichas de personagem de Dungeons & Dragons 5a Edicao, com foco em uso de mesa, edicao rapida, autenticacao por email e multiplas fichas salvas por usuario.
 
 O projeto foi construido com Next.js 14, React 18, TypeScript, Tailwind CSS e Zustand.
 
@@ -16,8 +16,11 @@ Esta ficha foi evoluida para funcionar como uma folha completa e editavel, com:
 - HP, dados de vida e testes de morte
 - dinheiro por denominacao oficial do D&D
 - anotacoes, inventario e campos personalizados
+- login por email e senha
+- varias fichas salvas por conta
+- API interna para carregar, criar, salvar e excluir fichas
 
-Toda a ficha e salva automaticamente no navegador via localStorage, sem backend.
+O projeto agora combina estado local no navegador para a ficha ativa com persistencia em banco via API para cada usuario autenticado.
 
 ## Stack
 
@@ -25,7 +28,11 @@ Toda a ficha e salva automaticamente no navegador via localStorage, sem backend.
 - React 18
 - TypeScript
 - Tailwind CSS
-- Zustand com persistencia
+- Zustand com persistencia local da ficha ativa
+- Prisma 6 + SQLite
+- Zod para validacao de payloads
+- bcryptjs para hash de senha
+- jose para sessao via cookie JWT
 - clsx + tailwind-merge para composicao de classes
 
 ## Como Rodar
@@ -39,8 +46,18 @@ Instalacao e desenvolvimento:
 
 ```bash
 npm install
+npx prisma migrate dev
 npm run dev
 ```
+
+Variaveis de ambiente:
+
+```env
+DATABASE_URL="file:./dev.db"
+AUTH_SECRET="troque-por-um-segredo-longo"
+```
+
+O projeto inclui `.env.example` com esses valores base.
 
 Aplicacao local:
 
@@ -66,6 +83,14 @@ npx tsc --noEmit
 - alinhamento
 - selecao de raca
 - selecao de antecedente
+
+### Contas e fichas salvas
+
+- cadastro por email e senha
+- login por sessao com cookie httpOnly
+- cada usuario possui sua propria lista de fichas
+- criacao, carregamento, renomeacao, duplicacao, salvamento e exclusao de fichas pelo workspace autenticado
+- a ficha ativa continua espelhada no Zustand para edicao imediata na interface
 
 ### Racas
 
@@ -165,12 +190,19 @@ npx tsc --noEmit
 
 ```text
 .
+├── prisma/
+│   ├── migrations/
+│   └── schema.prisma
 ├── src/
 │   ├── app/
+│   │   ├── api/
+│   │   │   ├── auth/
+│   │   │   └── sheets/
 │   │   ├── globals.css
 │   │   ├── layout.tsx
 │   │   └── page.tsx
 │   ├── components/
+│   │   ├── auth/
 │   │   ├── sheet/
 │   │   │   ├── ArmorSection.tsx
 │   │   │   ├── AttacksSection.tsx
@@ -191,11 +223,16 @@ npx tsc --noEmit
 │   │   ├── races/
 │   │   └── weapons.ts
 │   ├── lib/
+│   │   ├── api.ts
+│   │   ├── auth.ts
 │   │   ├── calc.ts
+│   │   ├── character-state.ts
+│   │   ├── prisma.ts
 │   │   ├── store.ts
 │   │   └── utils.ts
 │   └── types/
 │       └── index.ts
+├── .env.example
 ├── next.config.mjs
 ├── package.json
 ├── postcss.config.mjs
@@ -208,6 +245,14 @@ npx tsc --noEmit
 ### `src/components/sheet/CharacterSheet.tsx`
 
 Compoe a ficha inteira, organiza o layout em duas colunas e monta as secoes principais.
+
+### `src/components/auth/AuthScreen.tsx`
+
+Renderiza a tela de login e cadastro por email, enviando requisicoes para os endpoints de autenticacao.
+
+### `src/components/sheet/SheetWorkspace.tsx`
+
+Envolve a ficha principal no modo autenticado, lista as fichas do usuario e concentra os botoes de criar, salvar, carregar, excluir e sair.
 
 ### `src/components/sheet/CharacterHeader.tsx`
 
@@ -303,7 +348,7 @@ Esses catalogos abastecem os campos automatizados de combate.
 
 ## Store e Persistencia
 
-O estado global fica em `src/lib/store.ts` com Zustand e `persist`.
+O estado global da ficha ativa fica em `src/lib/store.ts` com Zustand e `persist`.
 
 Principais grupos de estado:
 
@@ -325,7 +370,60 @@ Principais grupos de estado:
 Persistencia:
 
 - chave atual: `dnd-sheet-storage`
-- armazenamento: `localStorage`
+- armazenamento local: `localStorage`
+- armazenamento remoto: SQLite via Prisma
+- sincronizacao remota: endpoints em `src/app/api/sheets/`
+
+### Fluxo de persistencia
+
+1. o usuario autentica por email e senha
+2. a pagina inicial consulta a sessao e a lista de fichas do usuario
+3. ao carregar uma ficha, os dados sao normalizados e enviados para o store local
+4. durante a edicao, a interface trabalha sobre o Zustand para resposta imediata
+5. ao salvar, a ficha atual e serializada e enviada para a API
+
+## Autenticacao e API
+
+### Sessao
+
+- cookie: `dnd-sheet-session`
+- formato: JWT assinado
+- armazenamento: cookie httpOnly com `sameSite=lax`
+
+### Endpoints de autenticacao
+
+- `POST /api/auth/register`: cria usuario e abre sessao
+- `POST /api/auth/login`: autentica usuario existente
+- `POST /api/auth/logout`: encerra a sessao
+- `GET /api/auth/session`: retorna o usuario autenticado ou `null`
+
+### Endpoints de fichas
+
+- `GET /api/sheets`: lista fichas do usuario autenticado
+- `POST /api/sheets`: cria uma nova ficha vazia para o usuario
+- `GET /api/sheets/[sheetId]`: carrega uma ficha especifica
+- `PUT /api/sheets/[sheetId]`: atualiza nome e dados da ficha
+- `DELETE /api/sheets/[sheetId]`: exclui a ficha
+
+### Modelos do banco
+
+`User`
+
+- `id`
+- `email`
+- `name`
+- `passwordHash`
+- `createdAt`
+- `updatedAt`
+
+`Sheet`
+
+- `id`
+- `name`
+- `data` em JSON
+- `userId`
+- `createdAt`
+- `updatedAt`
 
 ## Calculos
 
@@ -384,10 +482,23 @@ Editar `CLASS_PRESETS` em `src/data/constants.ts`.
 
 O ponto central de montagem e `src/components/sheet/CharacterSheet.tsx`.
 
+### Alterar o schema salvo da ficha
+
+O ponto central para defaults e normalizacao e `src/lib/character-state.ts`.
+
+Qualquer novo campo persistido deve ser refletido em:
+
+1. `src/types/index.ts`
+2. `src/lib/character-state.ts`
+3. `src/lib/store.ts`
+4. componentes que editam ou consomem esse campo
+
 ## Observacoes de Manutencao
 
-- o projeto esta orientado a persistencia local, nao multiusuario
-- nao existe backend nem autenticacao
+- o projeto agora combina persistencia local da ficha ativa com persistencia remota por usuario
+- a autenticacao atual e proprietaria e baseada em email, senha e cookie JWT
+- o banco local de desenvolvimento usa SQLite via Prisma
+- o Prisma esta fixado na linha 6.x para manter compatibilidade com a configuracao atual do schema
 - varias interfaces usam texto livre para preservar flexibilidade de mesa
 - as secoes expansivas usam estado local de abertura e dados persistidos no store
 - o codigo privilegia edicao manual e velocidade de uso durante a sessao de jogo
@@ -398,7 +509,17 @@ Durante alteracoes, a validacao mais segura hoje e:
 
 ```bash
 npx tsc --noEmit
+npm run build
 ```
+
+Validacao manual recomendada da segunda etapa:
+
+1. criar uma conta nova
+2. criar duas fichas
+3. editar e salvar uma ficha
+4. trocar para outra ficha e voltar
+5. excluir uma ficha
+6. sair e entrar novamente
 
 ## Licenca
 

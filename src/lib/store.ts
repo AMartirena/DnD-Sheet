@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { createDefaultCharacterState, normalizeCharacterState } from "@/lib/character-state";
 import type {
   CharacterState, AttrKey, ArmorProfType, ProfLevel,
   ArmorEntry, AttackEntry, CharClass,
@@ -86,68 +87,7 @@ function spendWithConversion(coins: CurrencyState, key: CoinType, amount: number
 }
 
 // ─── Default state ──────────────────────────────────────────────────────────
-const DEFAULT_ATTRS: Record<AttrKey, number> = {
-  str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0,
-};
-
-const DEFAULT_STATE: CharacterState = {
-  name: "",
-  playerName: "",
-  raceKey: "",
-  backgroundKey: "",
-  background: "",
-  alignment: "",
-  classes: [{ id: "cls_1", name: "", subclass: "", level: 1, hitDie: "d8" }],
-  attrs: { ...DEFAULT_ATTRS },
-  savingThrowProfs: { str:false, dex:false, con:false, int:false, wis:false, cha:false },
-  skillProfs: {},
-  hpMax: 0,
-  hpCurrent: 0,
-  hpTemp: 0,
-  hitDiceCurrent: "",
-  speed: 9,
-  initiativeBonus: 0,
-  deathSaves: {
-    successes: [false, false, false],
-    failures:  [false, false, false],
-  },
-  armors: [
-    { id: "arm_1", name: "Armadura de Couro", type: "Leve", bonusCA: 2, stealthDisadv: false, equipped: false },
-    { id: "arm_2", name: "Escudo", type: "Escudo", bonusCA: 2, stealthDisadv: false, equipped: false },
-    { id: "arm_3", name: "Cota de Malha", type: "Média", bonusCA: 4, maxDex: 2, stealthDisadv: false, equipped: false },
-    { id: "arm_4", name: "Armadura de Placas", type: "Pesada", bonusCA: 8, minStr: 15, stealthDisadv: true, equipped: false },
-  ],
-  attacks: [
-    {
-      id: "atk_1", name: "Espada Longa", attribute: "FOR", bonusExtra: 0,
-      damage: "1d8", damageType: "Cortante", range: "Corpo a corpo (1,5m)",
-      properties: "Versátil (1d10)", notes: "",
-    },
-  ],
-  proficiencies: {
-    armor: { leves: false, medias: false, pesadas: false, escudos: false },
-    weapons: { simples: false, marciais: false },
-    custom: "",
-  },
-  coins: {
-    cp: 0,
-    sp: 0,
-    ep: 0,
-    gp: 0,
-    pp: 0,
-  },
-  features: "",
-  equipment: "",
-  abilities: "",
-  inventory: "",
-  bonusActions: [],
-  reactions: [],
-  subclassPanels: [],
-  subclassTraits: [],
-  spellcastingAbility: "",
-  spellSaveDC: 0,
-  spellAttackBonus: 0,
-};
+const DEFAULT_STATE: CharacterState = createDefaultCharacterState();
 
 // ─── Store interface ────────────────────────────────────────────────────────
 interface Store extends CharacterState {
@@ -203,6 +143,7 @@ interface Store extends CharacterState {
 
   // Reset
   resetSheet: () => void;
+  replaceSheet: (state: CharacterState) => void;
 }
 
 let _counter = 100;
@@ -407,7 +348,9 @@ export const useCharStore = create<Store>()(
           return { deathSaves: { ...s.deathSaves, [type]: arr } };
         }),
 
-      resetSheet: () => set({ ...DEFAULT_STATE }),
+      resetSheet: () => set(createDefaultCharacterState()),
+
+      replaceSheet: (state) => set(normalizeCharacterState(state)),
     }),
     { name: "dnd-sheet-storage" }
   )

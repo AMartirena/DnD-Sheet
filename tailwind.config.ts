@@ -9,8 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        serif: ["'Crimson Text'", "Georgia", "serif"],
-        display: ["'IM Fell English'", "Georgia", "serif"],
+        serif: ["var(--font-crimson-text)", "Georgia", "serif"],
+        display: ["var(--font-im-fell-english)", "Georgia", "serif"],
       },
       colors: {
         parchment: {
