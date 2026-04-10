@@ -126,6 +126,7 @@ export function createDefaultCharacterState(): CharacterState {
     equipment: "",
     abilities: "",
     inventory: "",
+    generalNotes: "",
     bonusActions: [],
     reactions: [],
     subclassPanels: [],

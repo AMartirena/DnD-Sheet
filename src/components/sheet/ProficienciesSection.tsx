@@ -280,8 +280,8 @@ export function ProficienciesSection() {
     <div className="mb-5">
       <SectionTitle>Proficiências</SectionTitle>
 
-      <div className="rounded-xl border border-dnd-border bg-parchment-200/60 px-2.5 py-2 shadow-inset">
-        <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 items-center">
+      <div className="rounded-xl border border-dnd-border bg-parchment-200/60 px-2 py-2 shadow-inset sm:px-2.5">
+        <div className="grid gap-x-2 gap-y-2 items-start sm:grid-cols-[auto_1fr] sm:items-center sm:gap-x-3">
           <FieldLabel className="mb-0 text-[8px] text-dnd-red font-semibold tracking-[2px]">Armaduras</FieldLabel>
           <ProfPinGroup<ArmorProfType>
             options={ARMOR_PROFICIENCY_OPTIONS}
@@ -298,7 +298,7 @@ export function ProficienciesSection() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-dnd-border bg-parchment-200/60 px-2.5 py-2 mt-2 shadow-inset">
+      <div className="rounded-xl border border-dnd-border bg-parchment-200/60 px-2 py-2 mt-2 shadow-inset sm:px-2.5">
         <FieldLabel className="mb-1 text-[8px] text-dnd-red font-semibold tracking-[2px]">Personalizadas</FieldLabel>
         <AutoResizeTextarea
           value={store.proficiencies.custom}

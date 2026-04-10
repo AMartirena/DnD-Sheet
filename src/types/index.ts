@@ -174,6 +174,7 @@ export interface CharacterState {
   equipment: string;
   abilities: string;
   inventory: string;
+  generalNotes: string;
   bonusActions: TraitEntry[];
   reactions: TraitEntry[];
   subclassPanels: string[];

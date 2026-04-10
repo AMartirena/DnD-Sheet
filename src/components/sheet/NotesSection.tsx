@@ -160,8 +160,8 @@ export function NotesSection() {
         <div>
           <FieldLabel className="mb-1 text-dnd-red font-semibold tracking-[2px]">Notas Gerais</FieldLabel>
           <TextArea
-            value={""}
-            onChange={() => {}}
+            value={store.generalNotes}
+            onChange={(v) => store.setField("generalNotes", v)}
             placeholder="Anotações soltas de sessão, objetivos, ganchos ou lembretes do personagem..."
             rows={8}
           />

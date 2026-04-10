@@ -123,7 +123,11 @@ export function SpellSection() {
   };
 
   const toggleSlotLevelExpansion = (level: number) => {
-    setExpandedSlotLevels((current) => (current.includes(level) ? [] : [level]));
+    setExpandedSlotLevels((current) =>
+      current.includes(level)
+        ? current.filter((entryLevel) => entryLevel !== level)
+        : [...current, level],
+    );
   };
 
   const addSpellcastingProfile = () => {
@@ -152,8 +156,8 @@ export function SpellSection() {
     <div className="mb-5">
       <SectionTitle>Magias &amp; Espaços de Magia</SectionTitle>
 
-      <div className="mb-4 rounded-xl border border-dnd-border bg-parchment-200/60 p-3 shadow-inset">
-        <div className="mb-3 flex items-center justify-between gap-3">
+      <div className="mb-4 rounded-xl border border-dnd-border bg-parchment-200/60 p-2.5 shadow-inset sm:p-3">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div className="text-[9px] font-semibold uppercase tracking-[2px] text-dnd-red">CDs de Magia</div>
           <AddRowButton onClick={addSpellcastingProfile}>+ Adicionar Conjurador</AddRowButton>
         </div>
@@ -165,9 +169,9 @@ export function SpellSection() {
 
             return (
               <div key={profile.id} className="rounded border border-dnd-border bg-parchment-100/60 p-2">
-                <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_92px_92px_auto] md:items-end">
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    <div>
+                <div className="space-y-2">
+                  <div className="flex items-end gap-2">
+                    <div className="min-w-0 flex-1">
                       <FieldLabel>Classe Conjuradora</FieldLabel>
                       <input
                         type="text"
@@ -183,6 +187,7 @@ export function SpellSection() {
                       <SelectInput
                         value={profile.ability}
                         onChange={(e) => updateSpellcastingProfile(profile.id, { ability: e.target.value as AttrKey | "" })}
+                        className="min-w-[88px]"
                       >
                         <option value="">— Nenhum —</option>
                         {ATTR_LIST.map((attr) => (
@@ -192,20 +197,22 @@ export function SpellSection() {
                         ))}
                       </SelectInput>
                     </div>
+
+                    <div className="flex justify-end pb-1">
+                      <DeleteButton onClick={() => removeSpellcastingProfile(profile.id)} />
+                    </div>
                   </div>
 
-                  <div className="min-w-[92px] rounded border border-dnd-border bg-parchment-100/60 px-3 py-2 text-center">
-                    <div className="font-display text-[24px] leading-none text-ink">{dc}</div>
-                    <div className="mt-1 text-[8px] uppercase tracking-[2px] text-dnd-red">CD</div>
-                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="rounded border border-dnd-border bg-parchment-100/60 px-2 py-2 text-center">
+                      <div className="font-display text-[20px] leading-none text-ink sm:text-[24px]">{dc}</div>
+                      <div className="mt-1 text-[8px] uppercase tracking-[2px] text-dnd-red">CD</div>
+                    </div>
 
-                  <div className="min-w-[92px] rounded border border-dnd-border bg-parchment-100/60 px-3 py-2 text-center">
-                    <div className="font-display text-[24px] leading-none text-ink">{spellAttackBonus >= 0 ? `+${spellAttackBonus}` : spellAttackBonus}</div>
-                    <div className="mt-1 text-[8px] uppercase tracking-[2px] text-dnd-red">Ataque</div>
-                  </div>
-
-                  <div className="flex justify-end md:pb-1">
-                    <DeleteButton onClick={() => removeSpellcastingProfile(profile.id)} />
+                    <div className="rounded border border-dnd-border bg-parchment-100/60 px-2 py-2 text-center">
+                      <div className="font-display text-[20px] leading-none text-ink sm:text-[24px]">{spellAttackBonus >= 0 ? `+${spellAttackBonus}` : spellAttackBonus}</div>
+                      <div className="mt-1 text-[8px] uppercase tracking-[2px] text-dnd-red">Ataque</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -218,7 +225,7 @@ export function SpellSection() {
         </div>
       </div>
 
-      <div className="mb-4 rounded-xl border border-dnd-border bg-parchment-200/60 p-3 shadow-inset">
+      <div className="mb-4 rounded-xl border border-dnd-border bg-parchment-200/60 p-2.5 shadow-inset sm:p-3">
         <div className="mb-2 text-[9px] font-semibold uppercase tracking-[2px] text-dnd-red">Espaços de Magia</div>
         <div className="grid gap-1 sm:grid-cols-2 xl:grid-cols-3">
           {store.spellbook
@@ -280,7 +287,7 @@ export function SpellSection() {
         {store.spellbook.map((levelEntry) => {
           const isCantrip = levelEntry.level === 0;
           return (
-            <div key={levelEntry.level} className="rounded-xl border border-dnd-border bg-parchment-200/60 p-3 shadow-inset">
+            <div key={levelEntry.level} className="rounded-xl border border-dnd-border bg-parchment-200/60 p-2.5 shadow-inset sm:p-3">
               <div className="mb-3">
                 <div>
                   <div className="text-[9px] uppercase tracking-[2px] text-dnd-red font-semibold">{SPELL_LEVEL_LABELS[levelEntry.level]}</div>
@@ -331,7 +338,7 @@ export function SpellSection() {
                             />
                           </div>
 
-                          <div className="grid gap-2 sm:grid-cols-2">
+                          <div className="grid grid-cols-2 gap-2">
                             <div>
                               <FieldLabel>Tempo de Conjuração</FieldLabel>
                               <input
@@ -354,7 +361,7 @@ export function SpellSection() {
                               />
                             </div>
 
-                            <div className="sm:col-span-2">
+                            <div className="col-span-2">
                               <FieldLabel>Duração</FieldLabel>
                               <input
                                 type="text"
@@ -366,7 +373,7 @@ export function SpellSection() {
                             </div>
                           </div>
 
-                          <div className="flex flex-wrap gap-3 text-[10px] text-ink">
+                          <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] text-ink sm:flex sm:flex-wrap sm:gap-3">
                             <button
                               type="button"
                               onClick={() => updateSpell(levelEntry.level, spell.id, { prepared: !spell.prepared })}

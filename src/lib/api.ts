@@ -9,6 +9,7 @@ export const authSchema = z.object({
 
 export const createSheetSchema = z.object({
   name: z.string().trim().min(1, "Informe um nome para a ficha.").max(120),
+  data: z.object({}).passthrough().optional(),
 });
 
 export const updateSheetSchema = z.object({

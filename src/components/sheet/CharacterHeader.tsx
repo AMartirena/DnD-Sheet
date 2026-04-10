@@ -65,12 +65,12 @@ export function CharacterHeader() {
   return (
     <div className="mb-5">
       {/* Row 1 */}
-      <div className="flex flex-wrap gap-3 mb-3">
-        <div className="flex-[2] min-w-[160px]">
+      <div className="mb-3 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(120px,0.9fr)]">
+        <div className="col-span-2 lg:col-span-1">
           <FieldLabel>Nome do Personagem</FieldLabel>
           <TextInput value={name} onChange={(e) => setField("name", e.target.value)} placeholder="..." />
         </div>
-        <div className="flex-1 min-w-[120px]">
+        <div className="col-span-2 sm:col-span-1">
           <FieldLabel>Antecedente</FieldLabel>
           <SelectInput value={backgroundKey} onChange={(e) => handleBackgroundChange(e.target.value)}>
             <option value="">— Selecionar Antecedente —</option>
@@ -93,7 +93,7 @@ export function CharacterHeader() {
             />
           )}
         </div>
-        <div className="flex-1 min-w-[120px]">
+        <div className="col-span-1">
           <FieldLabel>Alinhamento</FieldLabel>
           <SelectInput value={alignment} onChange={(e) => setField("alignment", e.target.value)}>
             <option value="">— Selecionar Alinhamento —</option>
@@ -109,15 +109,15 @@ export function CharacterHeader() {
           </SelectInput>
         </div>
      
-        <div className="min-w-[120px]">
+        <div className="col-span-1">
           <FieldLabel>Jogador</FieldLabel>
           <TextInput value={playerName} onChange={(e) => setField("playerName", e.target.value)} placeholder="Seu nome" />
         </div>
       </div>
 
       {/* Row 2: Race */}
-      <div className="flex flex-wrap gap-3 items-start">
-        <div className="flex-1 min-w-[200px]">
+      <div className="grid gap-2 sm:gap-3 md:grid-cols-[minmax(220px,0.95fr)_minmax(0,1.25fr)] md:items-start">
+        <div>
           <FieldLabel>Raça</FieldLabel>
           <SelectInput value={raceKey} onChange={(e) => handleRaceChange(e.target.value)}>
             <option value="">— Selecionar Raça —</option>
@@ -134,7 +134,7 @@ export function CharacterHeader() {
         </div>
 
         {raceData && (
-          <div className="flex-[2] min-w-[200px] bg-parchment-200/60 border border-dnd-border rounded px-3 py-2">
+          <div className="bg-parchment-200/60 border border-dnd-border rounded px-2.5 py-2 sm:px-3">
             <div className="text-[9px] tracking-[2px] uppercase text-dnd-red font-semibold mb-1">
               Bônus Racial — {raceData.label}
               <span className="ml-2 text-ink-light normal-case tracking-normal font-normal">[{raceData.source}]</span>

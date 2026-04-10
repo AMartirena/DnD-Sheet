@@ -14,43 +14,43 @@ export function CombatSection() {
   return (
     <div className="mb-5">
       <SectionTitle>Classe de Armadura, PV &amp; Defesa</SectionTitle>
-      <div className="grid grid-cols-2 gap-3 max-sm:grid-cols-1">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3">
 
         {/* CA + Hit Dice */}
-        <div className="bg-parchment-200/60 border border-dnd-border rounded p-3 shadow-inset">
+        <div className="bg-parchment-200/60 border border-dnd-border rounded p-2.5 shadow-inset sm:p-3">
           <div className="text-[9px] tracking-[2px] uppercase text-dnd-red font-semibold mb-2">Classe de Armadura</div>
-          <div className="text-center mb-4">
+          <div className="text-center mb-3">
             <div
-              className="w-20 h-20 rounded-full border-2 border-dnd-gold flex flex-col items-center justify-center mx-auto mb-2"
+              className="mx-auto mb-2 flex h-16 w-16 flex-col items-center justify-center rounded-full border-2 border-dnd-gold sm:h-20 sm:w-20"
               style={{ background: "linear-gradient(135deg,#2c1810,#5a2010)", boxShadow: "0 0 12px rgba(139,105,20,.5)" }}
             >
-              <span className="font-display text-[30px] text-parchment-200 leading-none">{ca}</span>
+              <span className="font-display text-[24px] leading-none text-parchment-200 sm:text-[30px]">{ca}</span>
               <span className="text-[8px] tracking-[2px] uppercase text-parchment-400">CA</span>
             </div>
             <div className="text-[10px] text-ink-light">Base 10 + armaduras equipadas</div>
           </div>
 
-          <div className="border-t border-dnd-border/30 pt-3">
+          <div className="border-t border-dnd-border/30 pt-2.5 sm:pt-3">
             <div className="text-[9px] tracking-[2px] uppercase text-dnd-red font-semibold mb-2">Dados de Vida</div>
-            <div className="flex gap-1.5 items-center mb-3 flex-wrap">
-              <span className="text-[11px] text-ink-light whitespace-nowrap">Total</span>
-              <div className="bg-transparent border-b border-dnd-border font-serif text-[12px] text-ink outline-none min-w-[86px] text-center py-1 whitespace-nowrap">
+            <div className="grid grid-cols-2 gap-1.5 mb-3 items-center">
+              <span className="text-[10px] text-ink-light whitespace-nowrap">Total</span>
+              <div className="min-w-0 border-b border-dnd-border bg-transparent py-1 text-center font-serif text-[11px] text-ink whitespace-nowrap">
                 {hitDiceSummary}
               </div>
-              <span className="text-[11px] text-ink-light whitespace-nowrap">Atual</span>
+              <span className="text-[10px] text-ink-light whitespace-nowrap">Atual</span>
               <input
                 type="text"
                 value={store.hitDiceCurrent}
                 onChange={(e) => store.setField("hitDiceCurrent", e.target.value)}
                 placeholder="Ex: 1d10 + 2d8"
-                className="w-[108px] bg-transparent border-b border-dnd-border font-serif text-[12px] text-ink outline-none px-1 py-1 whitespace-nowrap"
+                className="min-w-0 w-full bg-transparent border-b border-dnd-border px-1 py-1 font-serif text-[11px] text-ink outline-none"
               />
             </div>
 
             <div className="text-[9px] tracking-[2px] uppercase text-dnd-red font-semibold mb-2">Testes de Morte</div>
             {(["successes","failures"] as const).map((type) => (
-              <div key={type} className="flex items-center gap-2 mb-1.5">
-                <span className="text-[10px] text-ink-light uppercase tracking-wide w-12">
+              <div key={type} className="mb-1.5 flex items-center gap-1.5">
+                <span className="w-10 text-[9px] uppercase tracking-wide text-ink-light sm:w-12 sm:text-[10px]">
                   {type === "successes" ? "Sucesso" : "Falha"}
                 </span>
                 <div className="flex gap-1.5">
@@ -69,19 +69,19 @@ export function CombatSection() {
         </div>
 
         {/* HP */}
-        <div className="bg-parchment-200/60 border border-dnd-border rounded p-3 shadow-inset">
+        <div className="bg-parchment-200/60 border border-dnd-border rounded p-2.5 shadow-inset sm:p-3">
           <div className="text-[9px] tracking-[2px] uppercase text-dnd-red font-semibold mb-2">Pontos de Vida</div>
           {[
             { label: "Máx",   field: "hpMax" as const,     size: "text-2xl" },
             { label: "Atual", field: "hpCurrent" as const,  size: "text-2xl" },
             { label: "Temp",  field: "hpTemp" as const,     size: "text-xl" },
           ].map(({ label, field, size }) => (
-            <div key={field} className="flex items-center gap-2 mb-2">
-              <span className="text-[11px] text-ink-light w-8">{label}</span>
+            <div key={field} className="mb-2 flex items-center gap-1.5">
+              <span className="w-8 text-[10px] text-ink-light">{label}</span>
               <NumberInput
                 value={store[field]}
                 onChange={(e) => store.setField(field, parseInt(e.target.value) || 0)}
-                className={`w-20 ${size}`}
+                className={`w-16 sm:w-20 ${size}`}
               />
             </div>
           ))}
@@ -89,11 +89,11 @@ export function CombatSection() {
           {/* HP Controls */}
           <div className="mt-3 pt-2 border-t border-dnd-border/30">
             <div className="text-[9px] tracking-[2px] uppercase text-dnd-red font-semibold mb-2">Controle de PV</div>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-[64px_auto_auto] sm:items-center">
               <input
                 type="number"
                 placeholder="Valor"
-                className="w-16 bg-transparent border-b border-dnd-border font-serif text-[12px] text-ink text-center outline-none"
+                className="w-full bg-transparent border-b border-dnd-border font-serif text-[12px] text-ink text-center outline-none"
                 id="hp-change-value"
               />
               <button

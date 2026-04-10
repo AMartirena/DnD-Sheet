@@ -16,14 +16,14 @@ export function CharacterSheet() {
 
   return (
     <div
-      className="mx-auto w-full max-w-[960px] overflow-hidden rounded-sm border-[3px] border-dnd-border p-3 sm:p-5 md:p-7"
+      className="mx-auto w-full max-w-[960px] overflow-hidden rounded-sm border-[3px] border-dnd-border p-2.5 sm:p-5 md:p-7"
       style={{
         background: "linear-gradient(160deg,#f9f0d0 0%,#f4e8c1 40%,#ecddb0 100%)",
         boxShadow: "0 0 0 6px #5a3e2b, 0 0 0 9px #d4bc7a, 0 20px 60px rgba(0,0,0,0.8)",
       }}
     >
       {/* Sheet header */}
-      <div className="mb-5 border-b-[3px] border-double border-dnd-border pb-4 text-center">
+      <div className="mb-4 border-b-[3px] border-double border-dnd-border pb-3 text-center sm:mb-5 sm:pb-4">
         <div className="font-display text-[9px] tracking-[3px] uppercase text-dnd-red sm:text-[11px] sm:tracking-[4px] mb-0.5">
           Dungeons &amp; Dragons
         </div>
@@ -42,13 +42,13 @@ export function CharacterSheet() {
 
       <CharacterHeader />
       <Divider />
-      <div className="grid gap-6 md:gap-8 lg:grid-cols-[minmax(240px,280px)_minmax(0,1fr)] lg:items-start lg:gap-10">
-        <div className="space-y-5">
+      <div className="grid gap-4 sm:gap-5 md:gap-8 lg:grid-cols-[minmax(240px,280px)_minmax(0,1fr)] lg:items-start lg:gap-10">
+        <div className="space-y-4 sm:space-y-5">
           <AttributesSection />
           <ProficienciesSection />
         </div>
 
-        <div className="space-y-5">
+        <div className="space-y-4 sm:space-y-5">
           <ClassesSection />
           <Divider />
           <CombatSection />

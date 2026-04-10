@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     data: {
       userId: user.id,
       name: parsed.data.name.trim(),
-      data: toPrismaJson(createDefaultCharacterState()),
+      data: toPrismaJson(parsed.data.data ?? createDefaultCharacterState()),
     },
     select: {
       id: true,

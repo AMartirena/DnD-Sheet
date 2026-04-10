@@ -59,6 +59,21 @@ export function SheetWorkspace({
   const orderSheets = (items: SheetSummary[]) =>
     [...items].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
 
+  const createSheetRecord = async (name: string, data?: CharacterState) => {
+    const response = await fetch("/api/sheets", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data ? { name, data } : { name }),
+    });
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(result?.error ?? "Nao foi possivel criar a ficha.");
+    }
+
+    return result.sheet as SheetSummary;
+  };
+
   const loadSheet = async (sheetId: string) => {
     setLoadingSheetId(sheetId);
     setMessage("");
@@ -86,25 +101,18 @@ export function SheetWorkspace({
       return;
     }
 
-    const response = await fetch("/api/sheets", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name }),
-    });
-    const result = await response.json().catch(() => null);
-
-    if (!response.ok) {
-      setMessage(result?.error ?? "Nao foi possivel criar a ficha.");
+    try {
+      const createdSheet = await createSheetRecord(name);
+      const nextSheets = orderSheets([createdSheet, ...sheets]);
+      setSheets(nextSheets);
+      setActiveSheetId(createdSheet.id);
+      replaceSheet(createDefaultCharacterState());
+      setMessage("Nova ficha criada.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Nao foi possivel criar a ficha.");
+    } finally {
       setWorking(false);
-      return;
     }
-
-    const nextSheets = orderSheets([result.sheet as SheetSummary, ...sheets]);
-    setSheets(nextSheets);
-    setActiveSheetId(result.sheet.id);
-    replaceSheet(createDefaultCharacterState());
-    setMessage("Nova ficha criada.");
-    setWorking(false);
   };
 
   const renameSheet = async () => {
@@ -207,16 +215,26 @@ export function SheetWorkspace({
   };
 
   const saveSheet = async () => {
-    if (!activeSheetId) {
-      setMessage("Crie uma ficha antes de salvar.");
-      return;
-    }
-
     setSaving(true);
     setMessage("");
 
     const snapshot = extractCharacterState(useCharStore.getState());
-    const nextName = snapshot.name.trim() || activeSheet?.name || "Ficha sem nome";
+    const nextName = snapshot.name.trim() || activeSheet?.name || `Ficha ${sheets.length + 1}`;
+
+    if (!activeSheetId) {
+      try {
+        const createdSheet = await createSheetRecord(nextName, snapshot);
+        setSheets((current) => orderSheets([createdSheet, ...current]));
+        setActiveSheetId(createdSheet.id);
+        setMessage("Ficha salva com sucesso.");
+      } catch (error) {
+        setMessage(error instanceof Error ? error.message : "Nao foi possivel salvar a ficha.");
+      } finally {
+        setSaving(false);
+      }
+      return;
+    }
+
     const response = await fetch(`/api/sheets/${activeSheetId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
