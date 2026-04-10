@@ -41,11 +41,35 @@ export function TextInput({ className, ...props }: InputProps) {
 }
 
 // ─── NumberInput ──────────────────────────────────────────────────────────
-export function NumberInput({ className, ...props }: InputProps) {
+export function NumberInput({ className, onChange, onFocus, onBlur, value, ...props }: InputProps) {
+  const [draftValue, setDraftValue] = React.useState(value == null ? "" : String(value));
+  const [isFocused, setIsFocused] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!isFocused) {
+      setDraftValue(value == null ? "" : String(value));
+    }
+  }, [isFocused, value]);
+
   return (
     <input
       type="number"
       {...props}
+      value={isFocused ? draftValue : value}
+      onChange={(event) => {
+        setDraftValue(event.target.value);
+        onChange?.(event);
+      }}
+      onFocus={(event) => {
+        setIsFocused(true);
+        setDraftValue(value === 0 ? "" : value == null ? "" : String(value));
+        onFocus?.(event);
+      }}
+      onBlur={(event) => {
+        setIsFocused(false);
+        setDraftValue(value == null ? "" : String(value));
+        onBlur?.(event);
+      }}
       className={cn(
         "bg-parchment-200/60 border-0 border-b border-dnd-border",
         "font-display text-ink px-1 py-0.5 outline-none text-center",
@@ -241,5 +265,41 @@ export function DeleteButton({ onClick }: { onClick: () => void }) {
     >
       ✕
     </button>
+  );
+}
+
+export function ConfirmDeleteButton({
+  onConfirm,
+  label = "Confirmar exclusão",
+}: {
+  onConfirm: () => void;
+  label?: string;
+}) {
+  const [confirming, setConfirming] = React.useState(false);
+
+  return confirming ? (
+    <div className="flex items-center gap-1">
+      <button
+        type="button"
+        title={label}
+        onClick={() => {
+          setConfirming(false);
+          onConfirm();
+        }}
+        className="h-6 w-6 rounded border border-dnd-red bg-dnd-red/15 text-[11px] leading-none text-dnd-red transition-colors hover:bg-dnd-red/25"
+      >
+        !
+      </button>
+      <button
+        type="button"
+        title="Cancelar exclusão"
+        onClick={() => setConfirming(false)}
+        className="h-6 w-6 rounded border border-dnd-border/60 text-[11px] leading-none text-ink-muted transition-colors hover:border-dnd-border hover:text-ink"
+      >
+        ↶
+      </button>
+    </div>
+  ) : (
+    <DeleteButton onClick={() => setConfirming(true)} />
   );
 }

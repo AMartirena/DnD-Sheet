@@ -5,7 +5,7 @@ import { RACES } from "@/data/races";
 import { TRAIT_DESCRIPTIONS } from "@/data/races/raceTraits";
 import { useCharStore } from "@/lib/store";
 import { ARMOR_PROFICIENCY_OPTIONS, WEAPON_PROFICIENCY_OPTIONS } from "@/data/constants";
-import { SectionTitle, FieldLabel, ProfCircle, AddRowButton, DeleteButton, TextInput } from "@/components/ui";
+import { SectionTitle, FieldLabel, ProfCircle, AddRowButton, ConfirmDeleteButton, TextInput } from "@/components/ui";
 import type { ArmorProfType, BackgroundData, WeaponProfType } from "@/types";
 
 function AutoResizeTextarea({
@@ -230,8 +230,8 @@ function SubclassTraitPanel({ classId, subclassName, className }: {
                   >
                     {trait.title.trim() || "Nova habilidade de subclasse"}
                   </button>
-                  <DeleteButton
-                    onClick={() => {
+                  <ConfirmDeleteButton
+                    onConfirm={() => {
                       if (expanded) setExpandedId(null);
                       store.removeSubclassTrait(trait.id);
                     }}

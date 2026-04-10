@@ -4,7 +4,7 @@ import { useCharStore } from "@/lib/store";
 import { getTotalLevel, getProfBonus, attackBonus, fmtMod } from "@/lib/calc";
 import { DAMAGE_TYPES, ATTACK_ATTRS } from "@/data/constants";
 import { WEAPONS } from "@/data/weapons";
-import { SectionTitle, AddRowButton, DeleteButton, FieldLabel, NumberInput, TextInput } from "@/components/ui";
+import { SectionTitle, AddRowButton, ConfirmDeleteButton, DeleteButton, FieldLabel, NumberInput, TextInput } from "@/components/ui";
 import type { AttackAttr, ConsumableAbilityEntry, DamageType, TraitEntry } from "@/types";
 
 function AutoResizeTextarea({
@@ -93,8 +93,8 @@ function CombatOptionPanel({
                   >
                     {entry.title.trim() || `Nova ${title.toLowerCase()}`}
                   </button>
-                  <DeleteButton
-                    onClick={() => {
+                  <ConfirmDeleteButton
+                    onConfirm={() => {
                       if (expanded) onExpandedChange(null);
                       onRemove(entry.id);
                     }}
@@ -176,8 +176,8 @@ function ConsumableAbilityPanel({
                     <span className="truncate">{entry.title.trim() || "Novo recurso consumivel"}</span>
                     <span className="shrink-0 font-display text-[12px]">{entry.currentUses}/{entry.totalUses}</span>
                   </button>
-                  <DeleteButton
-                    onClick={() => {
+                  <ConfirmDeleteButton
+                    onConfirm={() => {
                       if (expanded) onExpandedChange(null);
                       onRemove(entry.id);
                     }}

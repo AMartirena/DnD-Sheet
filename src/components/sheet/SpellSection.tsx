@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useCharStore } from "@/lib/store";
 import { getProfBonus, getTotalLevel, spellAttackBonusFn, spellSaveDC } from "@/lib/calc";
 import { ATTR_LIST } from "@/data/constants";
-import { AddRowButton, DeleteButton, FieldLabel, NumberInput, ProfCircle, SectionTitle, SelectInput } from "@/components/ui";
+import { AddRowButton, ConfirmDeleteButton, FieldLabel, NumberInput, ProfCircle, SectionTitle, SelectInput } from "@/components/ui";
 import type { AttrKey, SpellEntry, SpellLevelState, SpellcastingProfile } from "@/types";
 
 const SPELL_LEVEL_LABELS = [
@@ -199,7 +199,7 @@ export function SpellSection() {
                     </div>
 
                     <div className="flex justify-end pb-1">
-                      <DeleteButton onClick={() => removeSpellcastingProfile(profile.id)} />
+                      <ConfirmDeleteButton onConfirm={() => removeSpellcastingProfile(profile.id)} />
                     </div>
                   </div>
 
@@ -324,7 +324,7 @@ export function SpellSection() {
                           </div>
                         </button>
 
-                        <DeleteButton onClick={() => removeSpell(levelEntry.level, spell.id)} />
+                        <ConfirmDeleteButton onConfirm={() => removeSpell(levelEntry.level, spell.id)} />
                       </div>
 
                       {expandedSpellIds.includes(spell.id) && (
