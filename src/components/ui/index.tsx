@@ -143,18 +143,22 @@ export function ProfCircle({
   size?: number;
 }) {
   const key: ProfStyle = (["none","half","full","expert"] as const)[level];
+  const printLabel = (["", "1/2", "P", "2x"] as const)[level];
   return (
     <button
       type="button"
       title={title ?? "Clique para alternar proficiência"}
       onClick={onClick}
       style={{ width: size, height: size, minWidth: size }}
+      data-prof-level={level}
       className={cn(
-        "rounded-full border-[1.5px] cursor-pointer transition-colors flex-shrink-0",
+        "prof-circle rounded-full border-[1.5px] cursor-pointer transition-colors flex-shrink-0 items-center justify-center",
         profStyles[key],
         key === "half" && "bg-gradient-to-r from-dnd-green/60 via-dnd-green/60 to-parchment-200",
       )}
-    />
+    >
+      <span className="prof-circle-print-label">{printLabel}</span>
+    </button>
   );
 }
 

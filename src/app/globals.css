@@ -34,6 +34,7 @@ body {
 
 /* ── Number inputs — hide spinners globally ─────────────────── */
 input[type="number"] {
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 input[type="number"]::-webkit-inner-spin-button,
@@ -45,6 +46,10 @@ input[type="number"]::-webkit-outer-spin-button {
 /* ── Select styling ─────────────────────────────────────────── */
 select {
   cursor: pointer;
+}
+
+.prof-circle-print-label {
+  display: none;
 }
 
 /* ── Scrollbar (parchment-themed) ───────────────────────────── */
@@ -66,6 +71,26 @@ select {
 
   body {
     color: #000;
+  }
+
+  .prof-circle {
+    position: relative !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .prof-circle-print-label {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    font-weight: 700;
+    line-height: 1;
+    color: #2c1810;
+  }
+
+  .prof-circle[data-prof-level="0"] .prof-circle-print-label {
+    display: none !important;
   }
 
   .workspace-toolbar,

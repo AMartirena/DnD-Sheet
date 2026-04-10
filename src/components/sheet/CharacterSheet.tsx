@@ -1,4 +1,5 @@
 "use client";
+import Image                  from "next/image";
 import { CharacterHeader }      from "./CharacterHeader";
 import { ClassesSection }       from "./ClassesSection";
 import { AttributesSection }    from "./AttributesSection";
@@ -21,6 +22,19 @@ export function CharacterSheet() {
     >
       {/* Sheet header */}
       <div className="mb-4 border-b-[3px] border-double border-dnd-border pb-3 text-center sm:mb-5 sm:pb-4">
+        <div className="mb-2 flex items-center justify-center gap-2.5 sm:gap-3">
+          <Image
+            src="/logo-z1k4.png"
+            alt="Z1K4"
+            width={44}
+            height={44}
+            className="h-9 w-9 object-contain sm:h-11 sm:w-11"
+            priority
+          />
+          <div className="font-display text-[20px] uppercase tracking-[0.28em] text-ink sm:text-[24px]">
+            Z1K4
+          </div>
+        </div>
         <div className="font-display text-[9px] tracking-[3px] uppercase text-dnd-red sm:text-[11px] sm:tracking-[4px] mb-0.5">
           Dungeons &amp; Dragons
         </div>
