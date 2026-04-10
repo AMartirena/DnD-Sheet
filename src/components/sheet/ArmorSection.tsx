@@ -6,6 +6,7 @@ import { ARMORS } from "@/data/armors";
 export function ArmorSection() {
   const store = useCharStore();
   const currentStrength = store.attrs.str;
+  const getArmorOptionValue = (armor: { name: string; type: string }) => `${armor.type}::${armor.name}`;
 
   // Check for classes that have Unarmored Defense
   const hasMonk = store.classes.some(c => c.name.toLowerCase().includes("monge"));
@@ -18,8 +19,8 @@ export function ArmorSection() {
     ...(hasBarbarian ? [{ name: "Defesa sem Armadura (Bárbaro)", type: "Natural" as const, bonusCA: 0, maxDex: undefined, minStr: undefined, stealthDisadv: false }] : []),
   ];
 
-  const handleArmorSelect = (armorId: string, selectedName: string) => {
-    if (selectedName === "Outro/Personalizado") {
+  const handleArmorSelect = (armorId: string, selectedValue: string) => {
+    if (selectedValue === "Outro/Personalizado") {
       // Reset to custom
       store.updateArmor(armorId, {
         name: "",
@@ -31,7 +32,7 @@ export function ArmorSection() {
       });
     } else {
       // Find the armor data and update
-      const armorData = armorOptions.find(a => a.name === selectedName);
+      const armorData = armorOptions.find((armorOption) => getArmorOptionValue(armorOption) === selectedValue);
       if (armorData) {
         const canEquipSelected = armorData.minStr === undefined || currentStrength >= armorData.minStr;
         store.updateArmor(armorId, {
@@ -67,20 +68,21 @@ export function ArmorSection() {
           </thead>
           <tbody>
             {store.armors.map((armor) => {
-              const isCustom = !armorOptions.some(a => a.name === armor.name);
+              const matchedArmor = armorOptions.find((armorOption) => armorOption.name === armor.name && armorOption.type === armor.type);
+              const isCustom = !matchedArmor;
               const lacksStrength = armor.minStr !== undefined && currentStrength < armor.minStr;
               return (
                 <tr key={armor.id} className="border-b border-dnd-border/30 last:border-0 hover:bg-parchment-100/50">
                   <td className="px-2 py-1.5 w-44 align-top">
                     <select
-                      value={isCustom ? "Outro/Personalizado" : armor.name}
+                      value={isCustom ? "Outro/Personalizado" : getArmorOptionValue(matchedArmor)}
                       onChange={(e) => handleArmorSelect(armor.id, e.target.value)}
                       className="w-full bg-transparent border border-dnd-border rounded px-2 py-1 font-serif text-[12px]
                                  text-ink outline-none focus:border-dnd-red transition-colors"
                     >
                       <option value="Outro/Personalizado">Outro/Personalizado</option>
                       {armorOptions.map((armorData) => (
-                        <option key={armorData.name} value={armorData.name}>
+                        <option key={getArmorOptionValue(armorData)} value={getArmorOptionValue(armorData)}>
                           {armorData.name}
                         </option>
                       ))}
