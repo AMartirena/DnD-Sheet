@@ -7,6 +7,7 @@ import { ProficienciesSection } from "./ProficienciesSection";
 import { ArmorSection }         from "./ArmorSection";
 import { AttacksSection }       from "./AttacksSection";
 import { NotesSection }         from "./NotesSection";
+import { SpellSection }         from "./SpellSection";
 import { Divider }              from "@/components/ui";
 import { useCharStore }         from "@/lib/store";
 
@@ -59,6 +60,9 @@ export function CharacterSheet() {
           <NotesSection />
         </div>
       </div>
+
+      <Divider />
+      <SpellSection />
 
       {/* Footer */}
       <div className="mt-4 text-center font-serif text-[9px] italic tracking-wide text-ink-muted sm:text-[10px]">

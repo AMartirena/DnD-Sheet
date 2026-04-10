@@ -1,4 +1,4 @@
-import type { AttrKey, ProfLevel, CharacterState } from "@/types";
+import type { AttrKey, ProfLevel, CharacterState, SpellcastingProfile } from "@/types";
 import { SKILLS } from "@/data/constants";
 import { RACES } from "@/data/races";
 
@@ -157,13 +157,23 @@ export const attackBonus = (
 };
 
 /** Spellcasting DC */
-export const spellSaveDC = (state: CharacterState, profBonus: number): number => {
-  if (!state.spellcastingAbility) return 0;
-  return 8 + profBonus + attrMod(state, state.spellcastingAbility);
+export const spellSaveDC = (
+  state: CharacterState,
+  profBonus: number,
+  abilityOverride?: SpellcastingProfile["ability"],
+): number => {
+  const ability = abilityOverride ?? state.spellcastingAbility;
+  if (!ability) return 0;
+  return 8 + profBonus + attrMod(state, ability);
 };
 
 /** Spellcasting attack bonus */
-export const spellAttackBonusFn = (state: CharacterState, profBonus: number): number => {
-  if (!state.spellcastingAbility) return 0;
-  return profBonus + attrMod(state, state.spellcastingAbility);
+export const spellAttackBonusFn = (
+  state: CharacterState,
+  profBonus: number,
+  abilityOverride?: SpellcastingProfile["ability"],
+): number => {
+  const ability = abilityOverride ?? state.spellcastingAbility;
+  if (!ability) return 0;
+  return profBonus + attrMod(state, ability);
 };

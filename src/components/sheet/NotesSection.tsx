@@ -1,10 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useCharStore } from "@/lib/store";
-import { getTotalLevel, getProfBonus, spellSaveDC, spellAttackBonusFn, fmtMod } from "@/lib/calc";
-import { ATTR_LIST } from "@/data/constants";
 import { SectionTitle, FieldLabel, NumberInput, SelectInput } from "@/components/ui";
-import type { AttrKey, CoinType } from "@/types";
+import type { CoinType } from "@/types";
 
 function TextArea({ value, onChange, placeholder, rows = 5 }: {
   value: string; onChange: (v: string) => void; placeholder?: string; rows?: number;
@@ -25,9 +23,6 @@ export function NotesSection() {
   const store = useCharStore();
   const [coinType, setCoinType] = useState<CoinType>("gp");
   const [coinChange, setCoinChange] = useState(0);
-  const prof = getProfBonus(getTotalLevel(store));
-  const dc   = spellSaveDC(store, prof);
-  const spellAtk = spellAttackBonusFn(store, prof);
   const totalGoldValue = (
     store.coins.cp / 100
     + store.coins.sp / 10
@@ -57,38 +52,7 @@ export function NotesSection() {
 
   return (
     <div className="mb-5">
-      <SectionTitle>Traços, Magias &amp; Equipamentos</SectionTitle>
-
-      {/* Spellcasting */}
-      <div className="bg-parchment-200/60 border border-dnd-border rounded p-3 mb-4">
-        <div className="text-[9px] tracking-[2px] uppercase text-dnd-red font-semibold mb-2">Conjuração</div>
-        <div className="flex flex-wrap gap-4 items-end">
-          <div className="min-w-[140px]">
-            <FieldLabel>Atributo de Feitiço</FieldLabel>
-            <SelectInput
-              value={store.spellcastingAbility}
-              onChange={(e) => store.setField("spellcastingAbility", e.target.value as AttrKey | "")}
-            >
-              <option value="">— Nenhum —</option>
-              {ATTR_LIST.map((a) => (
-                <option key={a.id} value={a.id}>{a.name} ({a.short})</option>
-              ))}
-            </SelectInput>
-          </div>
-          {store.spellcastingAbility && (
-            <>
-              <div className="text-center">
-                <div className="font-display text-2xl text-ink">{dc}</div>
-                <div className="text-[8px] tracking-[2px] uppercase text-dnd-red font-semibold">CD de Magia</div>
-              </div>
-              <div className="text-center">
-                <div className="font-display text-2xl text-ink">{fmtMod(spellAtk)}</div>
-                <div className="text-[8px] tracking-[2px] uppercase text-dnd-red font-semibold">Bônus de Ataque Mágico</div>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
+      <SectionTitle>Traços, Anotações &amp; Equipamentos</SectionTitle>
 
       <div className="bg-parchment-200/60 border border-dnd-border rounded p-3 mb-4">
         <div className="text-[9px] tracking-[2px] uppercase text-dnd-red font-semibold mb-2">Habilidades Raciais &amp; Anotações</div>
@@ -194,11 +158,11 @@ export function NotesSection() {
           />
         </div>
         <div>
-          <FieldLabel className="mb-1 text-dnd-red font-semibold tracking-[2px]">Notas &amp; Magias</FieldLabel>
+          <FieldLabel className="mb-1 text-dnd-red font-semibold tracking-[2px]">Notas Gerais</FieldLabel>
           <TextArea
             value={""}
             onChange={() => {}}
-            placeholder="Espaços de magia, lista de feitiços, notas gerais..."
+            placeholder="Anotações soltas de sessão, objetivos, ganchos ou lembretes do personagem..."
             rows={8}
           />
         </div>

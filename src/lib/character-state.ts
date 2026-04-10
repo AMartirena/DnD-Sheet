@@ -2,6 +2,9 @@ import type {
   CharacterState,
   AttrKey,
   CoinType,
+  SpellEntry,
+  SpellcastingProfile,
+  SpellLevelState,
 } from "@/types";
 
 const DEFAULT_ATTRS: Record<AttrKey, number> = {
@@ -20,6 +23,57 @@ const DEFAULT_COINS: Record<CoinType, number> = {
   gp: 0,
   pp: 0,
 };
+
+function createDefaultSpellbook(): SpellLevelState[] {
+  return Array.from({ length: 10 }, (_, level) => ({
+    level,
+    slotsTotal: 0,
+    slotsUsed: 0,
+    spells: [],
+  }));
+}
+
+function createSpellcastingProfile(index: number, ability: AttrKey | "" = "", label = ""): SpellcastingProfile {
+  return {
+    id: `spellcasting_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    label: label || `Conjurador ${index + 1}`,
+    ability,
+  };
+}
+
+function createDefaultSpellcastingProfiles(): SpellcastingProfile[] {
+  return [createSpellcastingProfile(0)];
+}
+
+function normalizeSpellcastingProfile(input: unknown, index: number): SpellcastingProfile {
+  const data = (input && typeof input === "object" ? input : {}) as Partial<SpellcastingProfile>;
+
+  return {
+    id: data.id ?? `spellcasting_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    label: data.label?.trim() ? data.label : `Conjurador ${index + 1}`,
+    ability: data.ability ?? "",
+  };
+}
+
+function normalizeSpellEntry(input: unknown): SpellEntry {
+  const data = (input && typeof input === "object" ? input : {}) as Partial<SpellEntry>;
+
+  return {
+    id: data.id ?? `spell_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    name: data.name ?? "",
+    castingTime: data.castingTime ?? "",
+    range: data.range ?? "",
+    duration: data.duration ?? "",
+    verbal: data.verbal ?? false,
+    somatic: data.somatic ?? false,
+    material: data.material ?? false,
+    prepared: data.prepared ?? false,
+    ritual: data.ritual ?? false,
+    concentration: data.concentration ?? false,
+    description: data.description ?? "",
+    notes: data.notes ?? "",
+  };
+}
 
 export function createDefaultCharacterState(): CharacterState {
   return {
@@ -79,6 +133,8 @@ export function createDefaultCharacterState(): CharacterState {
     spellcastingAbility: "",
     spellSaveDC: 0,
     spellAttackBonus: 0,
+    spellcastingProfiles: createDefaultSpellcastingProfiles(),
+    spellbook: createDefaultSpellbook(),
   };
 }
 
@@ -109,6 +165,22 @@ export function normalizeCharacterState(input: unknown): CharacterState {
     reactions: Array.isArray(data.reactions) ? data.reactions : fallback.reactions,
     subclassPanels: Array.isArray(data.subclassPanels) ? data.subclassPanels : fallback.subclassPanels,
     subclassTraits: Array.isArray(data.subclassTraits) ? data.subclassTraits : fallback.subclassTraits,
+    spellcastingProfiles: Array.isArray(data.spellcastingProfiles) && data.spellcastingProfiles.length > 0
+      ? data.spellcastingProfiles.map(normalizeSpellcastingProfile)
+      : [normalizeSpellcastingProfile({ ability: data.spellcastingAbility ?? "" }, 0)],
+    spellbook: Array.isArray(data.spellbook)
+      ? createDefaultSpellbook().map((defaultLevel, index) => {
+          const currentLevel = data.spellbook?.[index];
+          return {
+            ...defaultLevel,
+            ...currentLevel,
+            level: defaultLevel.level,
+            spells: Array.isArray(currentLevel?.spells)
+              ? currentLevel.spells.map(normalizeSpellEntry)
+              : defaultLevel.spells,
+          };
+        })
+      : fallback.spellbook,
   };
 }
 

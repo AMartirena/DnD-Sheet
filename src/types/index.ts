@@ -96,6 +96,35 @@ export interface TraitEntry {
   description: string;
 }
 
+export interface SpellEntry {
+  id: string;
+  name: string;
+  castingTime: string;
+  range: string;
+  duration: string;
+  verbal: boolean;
+  somatic: boolean;
+  material: boolean;
+  prepared: boolean;
+  ritual: boolean;
+  concentration: boolean;
+  description: string;
+  notes: string;
+}
+
+export interface SpellLevelState {
+  level: number;
+  slotsTotal: number;
+  slotsUsed: number;
+  spells: SpellEntry[];
+}
+
+export interface SpellcastingProfile {
+  id: string;
+  label: string;
+  ability: AttrKey | "";
+}
+
 // ─── Full character state ─────────────────────────────────────────────────
 export interface CharacterState {
   // Identity
@@ -152,4 +181,6 @@ export interface CharacterState {
   spellcastingAbility: AttrKey | "";
   spellSaveDC: number; // calculated
   spellAttackBonus: number; // calculated
+  spellcastingProfiles: SpellcastingProfile[];
+  spellbook: SpellLevelState[];
 }
