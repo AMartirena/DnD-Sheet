@@ -3,8 +3,12 @@ export const TRAIT_DESCRIPTIONS: Record<string, string> = {
   // ── Humano ──────────────────────────────────────────────────────────────
   "+1 em todos os atributos":
     "Você recebe +1 em todos os seus seis atributos de habilidade.",
+  "+1 em dois atributos à escolha":
+    "Dois atributos de sua escolha aumentam em 1.",
   "Distribua +1/+1 em dois atributos à escolha + 1 Talento":
     "Dois atributos de sua escolha aumentam em 1. Você também ganha um talento à sua escolha.",
+  "Distribua +1/+1 em dois atributos à escolha + 1 Talento + 1 Perícia":
+    "Dois atributos de sua escolha aumentam em 1. Você também ganha um talento à sua escolha e proficiência em uma perícia à sua escolha.",
 
   // ── Anão ────────────────────────────────────────────────────────────────
   "Resistência Anã":
@@ -19,6 +23,10 @@ export const TRAIT_DESCRIPTIONS: Record<string, string> = {
     "Sempre que você realizar um teste de Inteligência (História) relacionado à origem de um trabalho em pedra, você é considerado proficiente na perícia História e adiciona o dobro do seu bônus de proficiência ao teste, ao invés do seu bônus de proficiência normal.",
   "Treinamento em Armas Anãs":
     "Você tem proficiência com machadinha, machado de batalha, martelo leve e martelo de guerra.",
+  "Proficiência com Ferramentas":
+    "Você tem proficiência em uma ferramenta de artesão à sua escolha entre: ferramentas de ferreiro, suprimentos de cervejeiro ou ferramentas de pedreiro.",
+    "Proeficiência com ferramentas":
+    "Você tem proficiência em uma ferramenta de artesão à sua escolha entre: ferramentas de ferreiro, suprimentos de cervejeiro ou ferramentas de pedreiro.",
 
   // ── Elfo ────────────────────────────────────────────────────────────────
   "Transe":
@@ -27,10 +35,14 @@ export const TRAIT_DESCRIPTIONS: Record<string, string> = {
     "Você tem vantagem em testes de resistência contra ser enfeitiçado, e a magia não pode adormecer você.",
   "Sentidos Apurados":
     "Você tem proficiência na perícia Percepção.",
+  "Sentidos Aguçados":
+    "Você tem proficiência na perícia Percepção.",
   "Cantrip de Mago":
     "Você conhece um truque à sua escolha da lista de magias do mago. Inteligência é o atributo de magia para ele.",
   "Máscara da Floresta":
     "Você pode tentar se esconder mesmo quando apenas levemente obscurecido por folhagem, chuva forte, neve caindo, névoa e outros fenômenos naturais.",
+  "Treinamento em Armas Élficas":
+    "Você tem proficiência com espada longa, espada curta, arco curto e arco longo.",
   "Elfo da Floresta — Treinamento em Armas Élficas":
     "Você tem proficiência com espada longa, espada curta, arco curto e arco longo.",
   "Elfo Alto — Treinamento em Armas Élficas":
@@ -41,8 +53,14 @@ export const TRAIT_DESCRIPTIONS: Record<string, string> = {
     "Acostumado às profundezas subterrâneas, você enxerga na penumbra até 36 metros como se fosse luz brilhante, e na escuridão como se fosse penumbra. Você não distingue cores no escuro.",
   "Magia Drow inata":
     "Você conhece o truque luz dançante. Ao atingir o 3º nível, você pode lançar fada fogo uma vez por repouso longo. Ao atingir o 5º nível, você pode lançar escuridão uma vez por repouso longo. Carisma é seu atributo de magia para essas magias.",
+  "Magia Drow":
+    "Você conhece o truque luz dançante. Ao atingir o 3º nível, você pode lançar fada fogo uma vez por repouso longo. Ao atingir o 5º nível, você pode lançar escuridão uma vez por repouso longo. Carisma é seu atributo de magia para essas magias.",
   "Sensibilidade à Luz":
     "Você tem desvantagem em jogadas de ataque e em testes de Percepção baseados em visão quando você, o alvo do seu ataque, ou o que você tenta ver está em luz solar direta.",
+  "Sensibilidade à Luz Solar":
+    "Você tem desvantagem em jogadas de ataque e em testes de Percepção baseados em visão quando você, o alvo do seu ataque, ou o que você tenta ver está em luz solar direta.",
+  "Treinamento em Armas Drow":
+    "Você tem proficiência com rapieras, espadas curtas e bestas de mão.",
   "Drow — Treinamento em Armas Drow":
     "Você tem proficiência com rapieras, espadas curtas e bestas de mão.",
 
@@ -53,6 +71,8 @@ export const TRAIT_DESCRIPTIONS: Record<string, string> = {
     "Você tem vantagem em testes de resistência contra ser assustado.",
   "Agilidade de Halfling":
     "Você pode se mover através do espaço de qualquer criatura que seja de um tamanho maior que o seu.",
+  "Furtividade Natural":
+    "Você pode tentar se esconder mesmo quando obscurecido apenas por uma criatura que seja pelo menos um tamanho maior que você.",
   "Robustez Anã":
     "Você tem vantagem em salvamentos contra veneno e resistência contra dano de veneno. Você também conta como anão para os fins de usar qualquer item mágico que exija que você seja um anão.",
 
@@ -85,10 +105,14 @@ export const TRAIT_DESCRIPTIONS: Record<string, string> = {
   // ── Gnomo ───────────────────────────────────────────────────────────────
   "Vantagem em saves de Magia":
     "Você tem vantagem em testes de resistência de Inteligência, Sabedoria e Carisma contra magia.",
+  "Conhecimento de Artífice":
+    "Sempre que você fizer um teste de Inteligência (História) relacionado a itens mágicos, objetos alquímicos ou mecanismos tecnológicos, você pode adicionar o dobro do seu bônus de proficiência, em vez do bônus normal.",
   "Conhecimento Arcano":
     "Sempre que você fizer um teste de Inteligência (Arcanismo), você pode adicionar o dobro do seu bônus de proficiência, em vez do bônus normal.",
   "Ilusão Menor":
     "Você conhece o truque ilusão menor. Inteligência é o atributo de magia para ele.",
+  "Falar com Bestas Pequenas":
+    "Pelo uso de sons e gestos, você pode comunicar ideias simples a bestas de tamanho Pequeno ou menor.",
   "Falar com Bestas Miúdas":
     "Pelo uso de sons e gestos, você pode comunicar ideias simples a bestas de tamanho Miúdo ou menor. Gnomos da floresta amam animais e frequentemente têm esquilos, gambás, esquilos voadores, pássaros e outros bichos como amigos.",
   "Gnomo de Rocha — Conhecimento de Engenhocas":
@@ -295,4 +319,6 @@ export const TRAIT_DESCRIPTIONS: Record<string, string> = {
     "Como uma ação bônus, você pode assumir uma forma mais bestial. Essa transformação dura 1 minuto, até você morrer, ou até você revogar como ação bônus. Quando você usa Shifting, você ganha pontos de vida temporários iguais ao seu nível + seu modificador de Constituição (mínimo 1). Esses pontos de vida temporários desaparecem quando o Shifting termina. Além disso, enquanto você está em Shifting, você ganha um benefício adicional baseado no seu subtipo Shifter. Após usar este traço, você não pode usá-lo novamente até terminar um descanso curto ou longo.",
   "Shifter — Subtipos":
     "Escolha um subtipo ao criar seu personagem: Agressivo (velocidade +1,5m, ataque desarmado 1d6), Gracioso (proficiência em Acrobacia e Atletismo), Guardião (CA +1 natural), ou Vigilante (vantagem em Percepção).",
+  "DES+1 (base)":
+    "Seu valor base de Destreza aumenta em 1.",
 };

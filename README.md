@@ -72,7 +72,15 @@ npm run build
 npm run start
 npm run lint
 npx tsc --noEmit
+npm run admin:reset-password -- email@exemplo.com novaSenha123
 ```
+
+Reset manual de senha:
+
+- este projeto nao usa recuperacao por email
+- quando alguem esquecer a senha, rode `npm run admin:reset-password -- email@exemplo.com novaSenha123`
+- o script atualiza o `passwordHash` direto no banco via Prisma
+- depois basta informar a nova senha para a pessoa pelo canal que voces usam
 
 ## Funcionalidades Atuais
 

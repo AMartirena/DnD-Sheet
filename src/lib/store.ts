@@ -4,7 +4,7 @@ import { createDefaultCharacterState, normalizeCharacterState } from "@/lib/char
 import type {
   CharacterState, AttrKey, ArmorProfType, ProfLevel,
   ArmorEntry, AttackEntry, CharClass,
-  WeaponProfType, CoinType, CurrencyState, TraitEntry,
+  WeaponProfType, CoinType, CurrencyState, TraitEntry, ConsumableAbilityEntry,
 } from "@/types";
 
 const COIN_VALUES_CP: Record<CoinType, number> = {
@@ -127,6 +127,9 @@ interface Store extends CharacterState {
   addReaction: () => void;
   updateReaction: (id: string, patch: Partial<TraitEntry>) => void;
   removeReaction: (id: string) => void;
+  addConsumableAbility: () => void;
+  updateConsumableAbility: (id: string, patch: Partial<ConsumableAbilityEntry>) => void;
+  removeConsumableAbility: (id: string) => void;
 
   // Proficiencies
   toggleArmorProf: (key: ArmorProfType) => void;
@@ -142,6 +145,7 @@ interface Store extends CharacterState {
   toggleDeathSave: (type: "successes" | "failures", index: 0 | 1 | 2) => void;
 
   // Reset
+  longRest: () => void;
   resetSheet: () => void;
   replaceSheet: (state: CharacterState) => void;
 }
@@ -286,6 +290,36 @@ export const useCharStore = create<Store>()(
           reactions: s.reactions.filter((entry) => entry.id !== id),
         })),
 
+      addConsumableAbility: () =>
+        set((s) => ({
+          consumableAbilities: [
+            ...s.consumableAbilities,
+            { id: uid("resource"), title: "", description: "", totalUses: 1, currentUses: 1 },
+          ],
+        })),
+
+      updateConsumableAbility: (id, patch) =>
+        set((s) => ({
+          consumableAbilities: s.consumableAbilities.map((entry) => {
+            if (entry.id !== id) return entry;
+
+            const nextTotalUses = Math.max(0, patch.totalUses ?? entry.totalUses);
+            const nextCurrentRaw = patch.currentUses ?? entry.currentUses;
+
+            return {
+              ...entry,
+              ...patch,
+              totalUses: nextTotalUses,
+              currentUses: Math.max(0, Math.min(nextCurrentRaw, nextTotalUses)),
+            };
+          }),
+        })),
+
+      removeConsumableAbility: (id) =>
+        set((s) => ({
+          consumableAbilities: s.consumableAbilities.filter((entry) => entry.id !== id),
+        })),
+
       toggleArmorProf: (key) =>
         set((s) => ({
           proficiencies: {
@@ -347,6 +381,24 @@ export const useCharStore = create<Store>()(
           arr[index] = !arr[index];
           return { deathSaves: { ...s.deathSaves, [type]: arr } };
         }),
+
+      longRest: () =>
+        set((s) => ({
+          hpCurrent: s.hpMax,
+          hpTemp: 0,
+          deathSaves: {
+            successes: [false, false, false],
+            failures: [false, false, false],
+          },
+          consumableAbilities: s.consumableAbilities.map((entry) => ({
+            ...entry,
+            currentUses: entry.totalUses,
+          })),
+          spellbook: s.spellbook.map((levelEntry) => ({
+            ...levelEntry,
+            slotsUsed: 0,
+          })),
+        })),
 
       resetSheet: () => set(createDefaultCharacterState()),
 

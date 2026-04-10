@@ -284,7 +284,9 @@ export function SpellSection() {
       </div>
 
       <div className="space-y-3">
-        {store.spellbook.map((levelEntry) => {
+        {store.spellbook
+          .filter((levelEntry) => levelEntry.level === 0 || levelEntry.slotsTotal > 0)
+          .map((levelEntry) => {
           const isCantrip = levelEntry.level === 0;
           return (
             <div key={levelEntry.level} className="rounded-xl border border-dnd-border bg-parchment-200/60 p-2.5 shadow-inset sm:p-3">

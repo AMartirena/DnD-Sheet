@@ -96,6 +96,14 @@ export interface TraitEntry {
   description: string;
 }
 
+export interface ConsumableAbilityEntry {
+  id: string;
+  title: string;
+  description: string;
+  totalUses: number;
+  currentUses: number;
+}
+
 export interface SpellEntry {
   id: string;
   name: string;
@@ -177,6 +185,7 @@ export interface CharacterState {
   generalNotes: string;
   bonusActions: TraitEntry[];
   reactions: TraitEntry[];
+  consumableAbilities: ConsumableAbilityEntry[];
   subclassPanels: string[];
   subclassTraits: TraitEntry[];
   spellcastingAbility: AttrKey | "";

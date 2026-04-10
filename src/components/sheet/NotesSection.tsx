@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useCharStore } from "@/lib/store";
 import { SectionTitle, FieldLabel, NumberInput, SelectInput } from "@/components/ui";
 import type { CoinType } from "@/types";
@@ -7,14 +7,25 @@ import type { CoinType } from "@/types";
 function TextArea({ value, onChange, placeholder, rows = 5 }: {
   value: string; onChange: (v: string) => void; placeholder?: string; rows?: number;
 }) {
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  useLayoutEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, [value]);
+
   return (
     <textarea
+      ref={textareaRef}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       rows={rows}
       className="w-full bg-parchment-200/60 border border-dnd-border rounded p-2 font-serif text-[13px]
-                 text-ink outline-none focus:border-dnd-red transition-colors resize-y"
+                 text-ink outline-none focus:border-dnd-red transition-colors overflow-hidden resize-none"
     />
   );
 }

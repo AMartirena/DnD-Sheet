@@ -1,11 +1,44 @@
 "use client";
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useCharStore } from "@/lib/store";
 import { getTotalLevel, getProfBonus, attackBonus, fmtMod } from "@/lib/calc";
 import { DAMAGE_TYPES, ATTACK_ATTRS } from "@/data/constants";
 import { WEAPONS } from "@/data/weapons";
-import { SectionTitle, AddRowButton, DeleteButton, FieldLabel, TextInput } from "@/components/ui";
-import type { AttackAttr, DamageType, TraitEntry } from "@/types";
+import { SectionTitle, AddRowButton, DeleteButton, FieldLabel, NumberInput, TextInput } from "@/components/ui";
+import type { AttackAttr, ConsumableAbilityEntry, DamageType, TraitEntry } from "@/types";
+
+function AutoResizeTextarea({
+  value,
+  onChange,
+  placeholder,
+  minRows = 5,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  minRows?: number;
+}) {
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  useLayoutEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, [value]);
+
+  return (
+    <textarea
+      ref={textareaRef}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      rows={minRows}
+      className="w-full overflow-hidden rounded border border-dnd-border bg-parchment-100/70 p-1.5 font-serif text-[11px] text-ink outline-none transition-colors focus:border-dnd-red resize-none"
+    />
+  );
+}
 
 function CombatOptionPanel({
   title,
@@ -80,12 +113,115 @@ function CombatOptionPanel({
                     </div>
                     <div>
                       <FieldLabel className="mb-1 text-[8px] text-dnd-red font-semibold tracking-[2px]">Descrição</FieldLabel>
-                      <textarea
+                      <AutoResizeTextarea
                         value={entry.description}
-                        onChange={(e) => onUpdate(entry.id, { description: e.target.value })}
+                        onChange={(value) => onUpdate(entry.id, { description: value })}
                         placeholder={`Escreva a descrição completa de ${title.toLowerCase()}.`}
-                        rows={5}
-                        className="w-full resize-y rounded border border-dnd-border bg-parchment-100/70 p-1.5 font-serif text-[11px] text-ink outline-none transition-colors focus:border-dnd-red"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ConsumableAbilityPanel({
+  entries,
+  expandedId,
+  onExpandedChange,
+  onAdd,
+  onUpdate,
+  onRemove,
+}: {
+  entries: ConsumableAbilityEntry[];
+  expandedId: string | null;
+  onExpandedChange: (id: string | null) => void;
+  onAdd: () => void;
+  onUpdate: (id: string, patch: Partial<ConsumableAbilityEntry>) => void;
+  onRemove: (id: string) => void;
+}) {
+  return (
+    <div className="rounded-xl border border-dnd-border bg-parchment-200/60 px-2.5 py-2 shadow-inset">
+      <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <FieldLabel className="mb-1 text-[8px] text-dnd-red font-semibold tracking-[2px]">
+            Habilidades Consumiveis
+          </FieldLabel>
+          <div className="text-[10px] text-ink-light">Registre recursos limitados como Furia, Inspiracao e usos por descanso.</div>
+        </div>
+        <AddRowButton onClick={onAdd}>+ Adicionar</AddRowButton>
+      </div>
+
+      {entries.length === 0 ? (
+        <div className="rounded border border-dashed border-dnd-border bg-parchment-100/40 px-2 py-2 text-[10px] text-ink-light">
+          Adicione recursos consumiveis para acompanhar usos totais e atuais.
+        </div>
+      ) : (
+        <div className="grid gap-1.5">
+          {entries.map((entry) => {
+            const expanded = expandedId === entry.id;
+            return (
+              <div key={entry.id} className="rounded border border-dnd-border bg-parchment-100/80 px-2 py-1.5">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onExpandedChange(expanded ? null : entry.id)}
+                    className="flex flex-1 items-center justify-between gap-2 text-left text-[10px] text-ink transition hover:text-dnd-red"
+                  >
+                    <span className="truncate">{entry.title.trim() || "Novo recurso consumivel"}</span>
+                    <span className="shrink-0 font-display text-[12px]">{entry.currentUses}/{entry.totalUses}</span>
+                  </button>
+                  <DeleteButton
+                    onClick={() => {
+                      if (expanded) onExpandedChange(null);
+                      onRemove(entry.id);
+                    }}
+                  />
+                </div>
+
+                {expanded && (
+                  <div className="mt-2 rounded border border-dnd-border bg-white/70 p-2">
+                    <div className="mb-2">
+                      <FieldLabel className="mb-1 text-[8px] text-dnd-red font-semibold tracking-[2px]">Nome</FieldLabel>
+                      <TextInput
+                        value={entry.title}
+                        onChange={(e) => onUpdate(entry.id, { title: e.target.value })}
+                        placeholder="Ex: Furia, Inspiracao Bardica, Canalizar Divindade"
+                      />
+                    </div>
+
+                    <div className="mb-2 grid grid-cols-2 gap-2">
+                      <div>
+                        <FieldLabel className="mb-1 text-[8px] text-dnd-red font-semibold tracking-[2px]">Total</FieldLabel>
+                        <NumberInput
+                          value={entry.totalUses}
+                          min={0}
+                          onChange={(e) => onUpdate(entry.id, { totalUses: parseInt(e.target.value, 10) || 0 })}
+                          className="w-full text-lg"
+                        />
+                      </div>
+                      <div>
+                        <FieldLabel className="mb-1 text-[8px] text-dnd-red font-semibold tracking-[2px]">Atual</FieldLabel>
+                        <NumberInput
+                          value={entry.currentUses}
+                          min={0}
+                          onChange={(e) => onUpdate(entry.id, { currentUses: parseInt(e.target.value, 10) || 0 })}
+                          className="w-full text-lg"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <FieldLabel className="mb-1 text-[8px] text-dnd-red font-semibold tracking-[2px]">Descricao</FieldLabel>
+                      <AutoResizeTextarea
+                        value={entry.description}
+                        onChange={(value) => onUpdate(entry.id, { description: value })}
+                        placeholder="Escreva quando recarrega, como ativa e quaisquer observacoes desse recurso."
                       />
                     </div>
                   </div>
@@ -103,6 +239,7 @@ export function AttacksSection() {
   const store = useCharStore();
   const [expandedBonusActionId, setExpandedBonusActionId] = useState<string | null>(null);
   const [expandedReactionId, setExpandedReactionId] = useState<string | null>(null);
+  const [expandedConsumableAbilityId, setExpandedConsumableAbilityId] = useState<string | null>(null);
   const prof = getProfBonus(getTotalLevel(store));
 
   const handleWeaponSelect = (attackId: string, selectedName: string) => {
@@ -297,7 +434,7 @@ export function AttacksSection() {
       </div>
       <AddRowButton onClick={store.addAttack}>+ Adicionar Ataque</AddRowButton>
 
-      <div className="mt-3 grid gap-3 md:grid-cols-2">
+      <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         <CombatOptionPanel
           title="Ação Bônus"
           helper="Registre ações bônus com nome clicável e descrição expansível."
@@ -322,6 +459,15 @@ export function AttacksSection() {
           onAdd={store.addReaction}
           onUpdate={store.updateReaction}
           onRemove={store.removeReaction}
+        />
+
+        <ConsumableAbilityPanel
+          entries={store.consumableAbilities}
+          expandedId={expandedConsumableAbilityId}
+          onExpandedChange={setExpandedConsumableAbilityId}
+          onAdd={store.addConsumableAbility}
+          onUpdate={store.updateConsumableAbility}
+          onRemove={store.removeConsumableAbility}
         />
       </div>
     </div>

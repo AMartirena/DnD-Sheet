@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "railway:start": "npm run db:migrate:deploy && next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "admin:reset-password": "node scripts/reset-password.cjs"
   },
   "dependencies": {
     "@prisma/client": "^6.16.3",

@@ -6,7 +6,7 @@ import { TextInput, FieldLabel, SelectInput } from "@/components/ui";
 import type { AttrKey } from "@/types";
 
 export function CharacterHeader() {
-  const { name, playerName, raceKey, backgroundKey, background, alignment, setField, attrs, setAttr } = useCharStore();
+  const { name, playerName, raceKey, backgroundKey, background, alignment, setField, attrs, setAttr, longRest } = useCharStore();
   const raceData = RACES[raceKey];
   const handleBackgroundChange = (value: string) => {
     setField("backgroundKey", value);
@@ -152,6 +152,20 @@ export function CharacterHeader() {
             <div className="text-[10px] text-ink-light mt-0.5">{raceData.traits}</div>
           </div>
         )}
+      </div>
+
+      <div className="print-hidden mt-3 flex justify-end">
+        <button
+          type="button"
+          onClick={() => {
+            if (confirm("Aplicar descanso longo? Isso vai restaurar HP, recursos consumiveis e slots de magia.")) {
+              longRest();
+            }
+          }}
+          className="inline-flex rounded border border-dnd-green/50 bg-dnd-green/5 px-3 py-1.5 text-[9px] uppercase tracking-wide text-dnd-green transition-colors hover:border-dnd-green hover:bg-dnd-green/10"
+        >
+          Descanso Longo
+        </button>
       </div>
     </div>
   );

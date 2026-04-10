@@ -1,6 +1,7 @@
 import type {
   CharacterState,
   AttrKey,
+  ConsumableAbilityEntry,
   CoinType,
   SpellEntry,
   SpellcastingProfile,
@@ -75,6 +76,19 @@ function normalizeSpellEntry(input: unknown): SpellEntry {
   };
 }
 
+function normalizeConsumableAbility(input: unknown): ConsumableAbilityEntry {
+  const data = (input && typeof input === "object" ? input : {}) as Partial<ConsumableAbilityEntry>;
+  const totalUses = Math.max(0, data.totalUses ?? 0);
+
+  return {
+    id: data.id ?? `resource_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    title: data.title ?? "",
+    description: data.description ?? "",
+    totalUses,
+    currentUses: Math.max(0, Math.min(data.currentUses ?? totalUses, totalUses)),
+  };
+}
+
 export function createDefaultCharacterState(): CharacterState {
   return {
     name: "",
@@ -99,9 +113,7 @@ export function createDefaultCharacterState(): CharacterState {
     },
     armors: [
       { id: "arm_1", name: "Armadura de Couro", type: "Leve", bonusCA: 2, stealthDisadv: false, equipped: false },
-      { id: "arm_2", name: "Escudo", type: "Escudo", bonusCA: 2, stealthDisadv: false, equipped: false },
-      { id: "arm_3", name: "Cota de Malha", type: "Média", bonusCA: 4, maxDex: 2, stealthDisadv: false, equipped: false },
-      { id: "arm_4", name: "Armadura de Placas", type: "Pesada", bonusCA: 8, minStr: 15, stealthDisadv: true, equipped: false },
+  
     ],
     attacks: [
       {
@@ -129,6 +141,7 @@ export function createDefaultCharacterState(): CharacterState {
     generalNotes: "",
     bonusActions: [],
     reactions: [],
+    consumableAbilities: [],
     subclassPanels: [],
     subclassTraits: [],
     spellcastingAbility: "",
@@ -164,6 +177,9 @@ export function normalizeCharacterState(input: unknown): CharacterState {
     coins: { ...fallback.coins, ...(data.coins ?? {}) },
     bonusActions: Array.isArray(data.bonusActions) ? data.bonusActions : fallback.bonusActions,
     reactions: Array.isArray(data.reactions) ? data.reactions : fallback.reactions,
+    consumableAbilities: Array.isArray(data.consumableAbilities)
+      ? data.consumableAbilities.map(normalizeConsumableAbility)
+      : fallback.consumableAbilities,
     subclassPanels: Array.isArray(data.subclassPanels) ? data.subclassPanels : fallback.subclassPanels,
     subclassTraits: Array.isArray(data.subclassTraits) ? data.subclassTraits : fallback.subclassTraits,
     spellcastingProfiles: Array.isArray(data.spellcastingProfiles) && data.spellcastingProfiles.length > 0
