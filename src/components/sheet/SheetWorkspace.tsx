@@ -295,10 +295,14 @@ export function SheetWorkspace({
     router.refresh();
   };
 
+  const exportPdf = () => {
+    window.print();
+  };
+
   return (
-    <main className="min-h-screen px-4 py-6">
+    <main className="workspace-shell min-h-screen px-4 py-6">
       <div className="mx-auto max-w-[1280px]">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dnd-border bg-parchment-200/70 px-4 py-3 shadow-inset">
+        <div className="workspace-toolbar mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dnd-border bg-parchment-200/70 px-4 py-3 shadow-inset">
           <div>
             <div className="font-display text-[18px] text-ink">Fichas Salvas</div>
             <div className="text-[12px] text-ink-light">
@@ -316,6 +320,9 @@ export function SheetWorkspace({
             <button onClick={duplicateSheet} disabled={!activeSheetId || working || saving} className="rounded border border-dnd-gold px-3 py-2 text-[11px] uppercase tracking-[2px] text-dnd-gold hover:bg-parchment-100/70 transition-colors disabled:opacity-60">
               Duplicar
             </button>
+            <button onClick={exportPdf} disabled={working || saving} className="rounded border border-dnd-gold px-3 py-2 text-[11px] uppercase tracking-[2px] text-ink hover:bg-parchment-100/70 transition-colors disabled:opacity-60">
+              Exportar PDF
+            </button>
             <button onClick={saveSheet} disabled={saving} className="rounded border border-dnd-green px-3 py-2 text-[11px] uppercase tracking-[2px] text-dnd-green hover:bg-dnd-green/10 transition-colors disabled:opacity-60">
               {saving ? "Salvando..." : "Salvar"}
             </button>
@@ -329,13 +336,13 @@ export function SheetWorkspace({
         </div>
 
         {message && (
-          <div className="mb-4 rounded border border-dnd-border bg-parchment-200/70 px-3 py-2 text-[12px] text-ink-light shadow-inset">
+          <div className="workspace-message mb-4 rounded border border-dnd-border bg-parchment-200/70 px-3 py-2 text-[12px] text-ink-light shadow-inset">
             {message}
           </div>
         )}
 
-        <div className="grid gap-5 lg:grid-cols-[280px_minmax(0,1fr)]">
-          <aside className="rounded-xl border border-dnd-border bg-parchment-200/70 p-3 shadow-inset h-fit">
+        <div className="workspace-layout grid gap-5 lg:grid-cols-[280px_minmax(0,1fr)]">
+          <aside className="workspace-sidebar rounded-xl border border-dnd-border bg-parchment-200/70 p-3 shadow-inset h-fit">
             <div className="text-[9px] tracking-[2px] uppercase text-dnd-red font-semibold mb-2">Suas Fichas</div>
 
             {sheets.length === 0 ? (
@@ -368,7 +375,7 @@ export function SheetWorkspace({
             )}
           </aside>
 
-          <div>
+          <div className="workspace-sheet-area">
             <CharacterSheet />
           </div>
         </div>

@@ -153,7 +153,7 @@ export function SpellSection() {
   };
 
   return (
-    <div className="mb-5">
+    <div className="print-full-section mb-5">
       <SectionTitle>Magias &amp; Espaços de Magia</SectionTitle>
 
       <div className="mb-4 rounded-xl border border-dnd-border bg-parchment-200/60 p-2.5 shadow-inset sm:p-3">

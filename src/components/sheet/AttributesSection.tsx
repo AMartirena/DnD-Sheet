@@ -96,8 +96,8 @@ export function AttributesSection() {
 
       <ProficiencyLegend className="mb-3" />
 
-      <div className="mb-4 grid grid-cols-1 gap-2 md:grid-cols-2 md:items-end">
-        <div className="flex min-w-0 flex-col justify-end space-y-2">
+      <div className="print-attributes-grid mb-4 grid grid-cols-1 gap-2 md:grid-cols-2 md:items-end">
+        <div className="print-attributes-column flex min-w-0 flex-col justify-end space-y-2">
           <div className="bg-parchment-200/60 border border-dnd-border rounded-xl px-2 py-2 shadow-inset text-center">
             <div className="text-[7px] tracking-[2px] uppercase text-dnd-red font-semibold">Prof</div>
             <div className="font-display text-[20px] text-ink leading-none mt-1">{fmtMod(prof)}</div>
@@ -107,14 +107,14 @@ export function AttributesSection() {
           {(["str", "con", "wis"] as AttrKey[]).map(renderAttributeCard)}
         </div>
 
-        <div className="flex min-w-0 flex-col justify-end space-y-2">
+        <div className="print-attributes-column flex min-w-0 flex-col justify-end space-y-2">
           {renderAttributeCard("dex")}
           {(["int", "cha"] as AttrKey[]).map(renderAttributeCard)}
         </div>
       </div>
 
       {/* Passivas */}
-      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
+      <div className="print-passive-grid grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
         {PASSIVE_SKILLS.map(({ label, skillName }) => {
           const index = SKILLS.findIndex((s) => s.name === skillName);
           const bonus = index >= 0 ? skillBonus(store, index, prof) : 0;

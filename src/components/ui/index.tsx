@@ -209,7 +209,7 @@ export function DeathDot({
 // ─── Divider ──────────────────────────────────────────────────────────────
 export function Divider() {
   return (
-    <div className="text-center text-dnd-gold text-xs tracking-[6px] my-5 opacity-70">
+    <div className="print-hidden text-center text-dnd-gold text-xs tracking-[6px] my-5 opacity-70">
       — ✦ —
     </div>
   );

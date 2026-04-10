@@ -51,7 +51,7 @@ export function NotesSection() {
   };
 
   return (
-    <div className="mb-5">
+    <div className="print-full-section mb-5">
       <SectionTitle>Traços, Anotações &amp; Equipamentos</SectionTitle>
 
       <div className="bg-parchment-200/60 border border-dnd-border rounded p-3 mb-4">

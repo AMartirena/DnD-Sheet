@@ -15,9 +15,9 @@ export function ClassesSection() {
 
       <div className="space-y-2 mb-3">
         {store.classes.map((cls, i) => (
-          <div key={cls.id} className="flex gap-2 items-start bg-parchment-200/60 border border-dnd-border rounded px-3 py-2">
+          <div key={cls.id} className="grid gap-2 bg-parchment-200/60 border border-dnd-border rounded px-2 py-2 sm:px-3 sm:grid-cols-[minmax(0,1fr)_80px_52px_auto_auto] sm:items-start">
             {/* Class name with preset dropdown */}
-            <div className="flex-1 min-w-[160px]">
+            <div className="min-w-0">
               <FieldLabel>{i === 0 ? "Classe Principal" : "Multiclasse"}</FieldLabel>
               <div className="flex gap-1">
                 <TextInput
@@ -61,12 +61,12 @@ export function ClassesSection() {
             </div>
 
             {/* Hit die */}
-            <div className="min-w-[70px]">
+            <div className="min-w-0">
               <FieldLabel>Dado de Vida</FieldLabel>
               <SelectInput
                 value={cls.hitDie}
                 onChange={(e) => store.updateClass(cls.id, { hitDie: e.target.value })}
-                className="w-20"
+                className="w-full sm:w-20"
               >
                 {["d4","d6","d8","d10","d12"].map((d) => (
                   <option key={d} value={d}>{d}</option>
@@ -75,14 +75,14 @@ export function ClassesSection() {
             </div>
 
             {/* Level */}
-            <div className="flex flex-col items-center">
-              <FieldLabel className="text-center">Nv.</FieldLabel>
+            <div className="flex flex-col items-start sm:items-center">
+              <FieldLabel className="text-left sm:text-center">Nv.</FieldLabel>
               <NumberInput
                 value={cls.level}
                 min={1}
                 max={20}
                 onChange={(e) => store.updateClass(cls.id, { level: parseInt(e.target.value) || 1 })}
-                className="w-12 text-xl"
+                className="w-14 sm:w-12 text-xl"
               />
             </div>
 
@@ -110,7 +110,9 @@ export function ClassesSection() {
               ✦ Auto
             </button>
 
-            {i > 0 && <DeleteButton onClick={() => store.removeClass(cls.id)} />}
+            <div className="flex items-start justify-end sm:pt-5">
+              {i > 0 && <DeleteButton onClick={() => store.removeClass(cls.id)} />}
+            </div>
           </div>
         ))}
       </div>

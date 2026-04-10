@@ -16,7 +16,7 @@ export function CharacterSheet() {
 
   return (
     <div
-      className="mx-auto w-full max-w-[960px] overflow-hidden rounded-sm border-[3px] border-dnd-border p-2.5 sm:p-5 md:p-7"
+      className="print-sheet mx-auto w-full max-w-[960px] overflow-hidden rounded-sm border-[3px] border-dnd-border p-2.5 sm:p-5 md:p-7"
       style={{
         background: "linear-gradient(160deg,#f9f0d0 0%,#f4e8c1 40%,#ecddb0 100%)",
         boxShadow: "0 0 0 6px #5a3e2b, 0 0 0 9px #d4bc7a, 0 20px 60px rgba(0,0,0,0.8)",
@@ -34,7 +34,7 @@ export function CharacterSheet() {
         {/* Reset button */}
         <button
           onClick={() => { if (confirm("Resetar ficha? Todos os dados serão apagados.")) resetSheet(); }}
-          className="mt-3 inline-flex rounded border border-dnd-border/50 px-2 py-1 text-[9px] uppercase tracking-wide text-ink-muted transition-colors hover:border-dnd-red hover:text-dnd-red sm:absolute sm:right-0 sm:top-0 sm:mt-0"
+          className="print-hidden mt-3 inline-flex rounded border border-dnd-border/50 px-2 py-1 text-[9px] uppercase tracking-wide text-ink-muted transition-colors hover:border-dnd-red hover:text-dnd-red sm:absolute sm:right-0 sm:top-0 sm:mt-0"
         >
           ↺ Resetar
         </button>
@@ -42,13 +42,13 @@ export function CharacterSheet() {
 
       <CharacterHeader />
       <Divider />
-      <div className="grid gap-4 sm:gap-5 md:gap-8 lg:grid-cols-[minmax(240px,280px)_minmax(0,1fr)] lg:items-start lg:gap-10">
-        <div className="space-y-4 sm:space-y-5">
+      <div className="sheet-main-grid grid gap-4 sm:gap-5 md:gap-8 lg:grid-cols-[minmax(240px,280px)_minmax(0,1fr)] lg:items-start lg:gap-10">
+        <div className="sheet-sidebar-column space-y-4 sm:space-y-5">
           <AttributesSection />
           <ProficienciesSection />
         </div>
 
-        <div className="space-y-4 sm:space-y-5">
+        <div className="sheet-content-column print-content-grid space-y-4 sm:space-y-5">
           <ClassesSection />
           <Divider />
           <CombatSection />
@@ -65,7 +65,7 @@ export function CharacterSheet() {
       <SpellSection />
 
       {/* Footer */}
-      <div className="mt-4 text-center font-serif text-[9px] italic tracking-wide text-ink-muted sm:text-[10px]">
+      <div className="print-hidden mt-4 text-center font-serif text-[9px] italic tracking-wide text-ink-muted sm:text-[10px]">
         D&amp;D 5ª Edição — Ficha Digital Interativa • Dados salvos automaticamente no navegador
       </div>
     </div>

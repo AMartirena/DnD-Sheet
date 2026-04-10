@@ -65,7 +65,7 @@ export function CharacterHeader() {
   return (
     <div className="mb-5">
       {/* Row 1 */}
-      <div className="mb-3 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(120px,0.9fr)]">
+      <div className="print-header-grid mb-3 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(120px,0.9fr)]">
         <div className="col-span-2 lg:col-span-1">
           <FieldLabel>Nome do Personagem</FieldLabel>
           <TextInput value={name} onChange={(e) => setField("name", e.target.value)} placeholder="..." />
@@ -116,7 +116,7 @@ export function CharacterHeader() {
       </div>
 
       {/* Row 2: Race */}
-      <div className="grid gap-2 sm:gap-3 md:grid-cols-[minmax(220px,0.95fr)_minmax(0,1.25fr)] md:items-start">
+      <div className="print-header-race-grid grid gap-2 sm:gap-3 md:grid-cols-[minmax(220px,0.95fr)_minmax(0,1.25fr)] md:items-start">
         <div>
           <FieldLabel>Raça</FieldLabel>
           <SelectInput value={raceKey} onChange={(e) => handleRaceChange(e.target.value)}>

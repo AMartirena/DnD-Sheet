@@ -48,7 +48,7 @@ export function ArmorSection() {
   };
 
   return (
-    <div className="mb-5">
+    <div className="print-half-section mb-5">
       <SectionTitle>Armaduras &amp; Escudos</SectionTitle>
       <div className="overflow-x-auto">
         <table className="w-full table-auto text-[13px]">

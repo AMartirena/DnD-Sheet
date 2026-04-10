@@ -281,7 +281,7 @@ export function ProficienciesSection() {
       <SectionTitle>Proficiências</SectionTitle>
 
       <div className="rounded-xl border border-dnd-border bg-parchment-200/60 px-2 py-2 shadow-inset sm:px-2.5">
-        <div className="grid gap-x-2 gap-y-2 items-start sm:grid-cols-[auto_1fr] sm:items-center sm:gap-x-3">
+        <div className="print-proficiencies-grid grid gap-x-2 gap-y-2 items-start sm:grid-cols-[auto_1fr] sm:items-center sm:gap-x-3">
           <FieldLabel className="mb-0 text-[8px] text-dnd-red font-semibold tracking-[2px]">Armaduras</FieldLabel>
           <ProfPinGroup<ArmorProfType>
             options={ARMOR_PROFICIENCY_OPTIONS}

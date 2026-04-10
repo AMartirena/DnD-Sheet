@@ -150,7 +150,7 @@ export function AttacksSection() {
   };
 
   return (
-    <div className="mb-5">
+    <div className="print-half-section mb-5">
       <SectionTitle>Ataques &amp; Equipamentos de Combate</SectionTitle>
       <div className="overflow-x-auto">
         <table className="w-full text-[12px]">
