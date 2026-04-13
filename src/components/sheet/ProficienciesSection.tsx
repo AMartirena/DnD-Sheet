@@ -140,7 +140,7 @@ function BackgroundTraitPanel({ backgroundData, customName }: {
             key={`${entry.title}-${index}`}
             type="button"
             onClick={() => setExpandedIndex(index === expandedIndex ? null : index)}
-            className="rounded border border-dnd-border bg-parchment-100/80 px-2 py-1 text-left text-[10px] text-ink transition hover:border-dnd-red hover:bg-parchment-100"
+            className={`rounded border px-2 py-1 text-left text-[10px] text-ink transition hover:border-dnd-red hover:bg-parchment-100 ${expandedIndex === index ? 'border-red-600 bg-white' : 'border-dnd-border bg-parchment-100/80'}`}
           >
             {entry.title}
           </button>
@@ -181,7 +181,7 @@ function RaceTraitPanel({ raceKey }: { raceKey: string }) {
             key={`${trait}-${index}`}
             type="button"
             onClick={() => setExpandedIndex(index === expandedIndex ? null : index)}
-            className="rounded border border-dnd-border bg-parchment-100/80 px-2 py-1 text-left text-[10px] text-ink transition hover:border-dnd-red hover:bg-parchment-100"
+            className={`rounded border px-2 py-1 text-left text-[10px] text-ink transition hover:border-dnd-red hover:bg-parchment-100 ${expandedIndex === index ? 'border-red-600 bg-white' : 'border-dnd-border bg-parchment-100/80'}`}
           >
             {trait}
           </button>
@@ -326,7 +326,7 @@ function SubclassTraitPanel({ classId, subclassName, className }: {
           {subclassTraits.map((trait) => {
             const expanded = expandedId === trait.id;
             return (
-              <div key={trait.id} className="rounded border border-dnd-border bg-parchment-100/80 px-2 py-1.5">
+              <div key={trait.id} className={`rounded border ${expanded ? 'border-red-600' : 'border-dnd-border'} bg-parchment-100/80 px-2 py-1.5`}>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
@@ -355,12 +355,11 @@ function SubclassTraitPanel({ classId, subclassName, className }: {
                     </div>
                     <div>
                       <FieldLabel className="mb-1 text-[8px] text-dnd-red font-semibold tracking-[2px]">Descrição</FieldLabel>
-                      <textarea
+                      <AutoResizeTextarea
                         value={trait.description}
-                        onChange={(e) => store.updateSubclassTrait(trait.id, { description: e.target.value })}
+                        onChange={value => store.updateSubclassTrait(trait.id, { description: value })}
                         placeholder="Escreva a habilidade completa aqui."
-                        rows={5}
-                        className="w-full resize-y rounded border border-dnd-border bg-parchment-100/70 p-1.5 font-serif text-[11px] text-ink outline-none transition-colors focus:border-dnd-red"
+                        className="w-full rounded border border-dnd-border bg-parchment-100/70 p-1.5 font-serif text-[11px] text-ink outline-none transition-colors focus:border-dnd-red"
                       />
                     </div>
                   </div>

@@ -1,6 +1,7 @@
 "use client";
 import { useCharStore } from "@/lib/store";
-import { getTotalLevel } from "@/lib/calc";
+import { getTotalLevel, getMod } from "@/lib/calc";
+import { RACES } from "@/data/races";
 import { CLASS_PRESETS } from "@/data/constants";
 import { SectionTitle, TextInput, NumberInput, SelectInput, StatPill, AddRowButton, DeleteButton, FieldLabel } from "@/components/ui";
 
@@ -48,7 +49,7 @@ export function ClassesSection() {
                     if (!subclassName || hasSubclassPanel(cls.id)) return;
                     store.addSubclassPanel(cls.id);
                   }}
-                  disabled={!cls.subclass.trim() || hasSubclassPanel(cls.id)}
+                  disabled={!String(cls.subclass || '').trim() || hasSubclassPanel(cls.id)}
                   className="shrink-0 rounded border border-dnd-red/50 px-2 py-1 text-[9px] uppercase tracking-[1.5px] text-dnd-red transition-colors hover:bg-dnd-red/10 disabled:cursor-not-allowed disabled:opacity-50"
                   title={hasSubclassPanel(cls.id)
                     ? "Esta subclasse já possui um painel próprio"
@@ -133,14 +134,42 @@ export function ClassesSection() {
           </span>
         </div>
         <div className="flex flex-col items-center bg-parchment-200/60 border border-dnd-border rounded px-4 py-2 shadow-inset">
-          <NumberInput
-            value={store.initiativeBonus}
-            onChange={(e) => store.setField("initiativeBonus", parseInt(e.target.value) || 0)}
-            className="w-16 text-2xl"
-          />
-          <span className="text-[8px] tracking-[2px] uppercase text-dnd-red font-semibold mt-1">
-            Bônus Iniciativa
-          </span>
+          {(() => {
+            // Cálculo automático: mod DEX + bônus racial
+            const racial = RACES[store.raceKey]?.asi?.dex ?? 0;
+            const dexMod = getMod((store.attrs.dex ?? 10) + racial);
+            const autoValue = dexMod;
+            const manual = store.initiativeBonus;
+            const isAuto = manual === 0 || manual === null || manual === undefined;
+            return (
+              <>
+                <NumberInput
+                  value={isAuto ? autoValue : manual}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    if (isNaN(val) || val === autoValue) {
+                      store.setField("initiativeBonus", 0); // volta para automático
+                    } else {
+                      store.setField("initiativeBonus", val);
+                    }
+                  }}
+                  className="w-16 text-2xl"
+                />
+                <span className="text-[8px] tracking-[2px] uppercase text-dnd-red font-semibold mt-1">
+                  Bônus Iniciativa
+                </span>
+                {!isAuto && (
+                  <button
+                    type="button"
+                    className="mt-1 text-xs text-dnd-red underline hover:text-dnd-gold"
+                    onClick={() => store.setField("initiativeBonus", 0)}
+                  >
+                    Resetar para automático
+                  </button>
+                )}
+              </>
+            );
+          })()}
         </div>
       </div>
     </div>

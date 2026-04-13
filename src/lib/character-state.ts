@@ -152,6 +152,7 @@ export function createDefaultCharacterState(): CharacterState {
     spellAttackBonus: 0,
     spellcastingProfiles: createDefaultSpellcastingProfiles(),
     spellbook: createDefaultSpellbook(),
+    spellNotes: "",
   };
 }
 

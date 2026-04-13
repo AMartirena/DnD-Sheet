@@ -194,6 +194,13 @@ Reset manual de senha:
 - controles de adicionar e remover por denominacao
 - logica de conversao entre moedas implementada no store
 
+## Novidades e Melhorias Recentes
+
+- Campos expansíveis (magias, habilidades, traços raciais, antecedentes, ações bônus, reações, habilidades consumíveis) agora recebem um contorno vermelho quando abertos, facilitando a identificação visual do item expandido.
+- Campo de anotações gerais para magias, expansivo e sem scroll, ao final da seção de magias.
+- Campo de iniciativa agora mostra valor automático (mod DEX + bônus racial) por padrão, mas permite override manual.
+- Correções de UX em todos os campos editáveis e expansíveis.
+
 ## Estrutura do Projeto
 
 ```text

@@ -4,12 +4,17 @@ import { getTotalLevel, getHitDiceSummary, getProfBonus, totalCA, initiativeTota
 import { SectionTitle, NumberInput, DeathDot, ToggleSwitch } from "@/components/ui";
 
 export function CombatSection() {
+  // Seletores para garantir atualização ao mudar DEX, raça ou bônus de iniciativa
+  const dex = useCharStore((s) => s.attrs.dex);
+  const raceKey = useCharStore((s) => s.raceKey);
+  const initiativeBonus = useCharStore((s) => s.initiativeBonus);
   const store = useCharStore();
   const totalLevel = getTotalLevel(store);
   const hitDiceSummary = getHitDiceSummary(store);
   const prof = getProfBonus(totalLevel);
   const ca = totalCA(store);
-  const initiative = initiativeTotal(store);
+  // Recalcula iniciativa sempre que DEX, raça ou bônus mudarem
+  const initiative = initiativeTotal({ ...store, attrs: { ...store.attrs, dex }, raceKey, initiativeBonus });
 
   return (
     <div className="mb-5">
@@ -158,4 +163,5 @@ export function CombatSection() {
 
       
     </div>
-  );}
+  );
+}

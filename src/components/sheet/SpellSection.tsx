@@ -1,11 +1,31 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useRef, useLayoutEffect } from "react";
 import { useCharStore } from "@/lib/store";
 import { getProfBonus, getTotalLevel, spellAttackBonusFn, spellSaveDC } from "@/lib/calc";
 import { ATTR_LIST } from "@/data/constants";
 import { AddRowButton, ConfirmDeleteButton, FieldLabel, NumberInput, ProfCircle, SectionTitle, SelectInput } from "@/components/ui";
 import type { AttrKey, SpellEntry, SpellLevelState, SpellcastingProfile } from "@/types";
+
+// Textarea autoexpansível para anotações gerais
+function AutoResizeTextarea({ value, onChange, placeholder, minRows = 3, className = "" }) {
+  const textareaRef = useRef(null);
+  useLayoutEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, [value]);
+  return (
+    <textarea
+      ref={textareaRef}
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      placeholder={placeholder}
+      rows={minRows}
+      className={"w-full overflow-hidden resize-none rounded border border-dnd-border bg-parchment-200/50 p-2 font-serif text-[12px] text-ink outline-none transition-colors focus:border-dnd-red " + className}
+    />
+  );
+}
 
 const SPELL_LEVEL_LABELS = [
   "Truques",
@@ -110,7 +130,6 @@ export function SpellSection() {
       if (remainingSlots <= 0) {
         return;
       }
-
       updateSpellLevel(level, { slotsUsed: slotsUsed + 1 });
     }
 
@@ -160,10 +179,11 @@ export function SpellSection() {
     updateSpellcastingProfiles((profiles) => {
       if (profiles.length <= 1) {
         return profiles.map((profile) =>
-          profile.id === profileId ? { ...profile, label: profile.label || "Conjurador 1", ability: "" } : profile,
+          profile.id === profileId
+            ? { ...profile, label: profile.label || "Conjurador 1", ability: "" }
+            : profile,
         );
       }
-
       return profiles.filter((profile) => profile.id !== profileId);
     });
   };
@@ -172,6 +192,7 @@ export function SpellSection() {
     <div className="print-full-section mb-5">
       <SectionTitle>Magias &amp; Espaços de Magia</SectionTitle>
 
+      {/* ── Perfis de Conjuração ── */}
       <div className="mb-4 rounded-xl border border-dnd-border bg-parchment-200/60 p-2.5 shadow-inset sm:p-3">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div className="text-[9px] font-semibold uppercase tracking-[2px] text-dnd-red">CDs de Magia</div>
@@ -186,6 +207,7 @@ export function SpellSection() {
             return (
               <div key={profile.id} className="rounded border border-dnd-border bg-parchment-100/60 p-2">
                 <div className="space-y-2">
+                  {/* Linha: classe conjuradora + atributo + botão deletar */}
                   <div className="flex items-end gap-2">
                     <div className="min-w-0 flex-1">
                       <FieldLabel>Classe Conjuradora</FieldLabel>
@@ -202,7 +224,9 @@ export function SpellSection() {
                       <FieldLabel>Atributo</FieldLabel>
                       <SelectInput
                         value={profile.ability}
-                        onChange={(e) => updateSpellcastingProfile(profile.id, { ability: e.target.value as AttrKey | "" })}
+                        onChange={(e) =>
+                          updateSpellcastingProfile(profile.id, { ability: e.target.value as AttrKey | "" })
+                        }
                         className="min-w-[88px]"
                       >
                         <option value="">— Nenhum —</option>
@@ -219,6 +243,7 @@ export function SpellSection() {
                     </div>
                   </div>
 
+                  {/* CD e Bônus de Ataque */}
                   <div className="grid grid-cols-2 gap-2">
                     <div className="rounded border border-dnd-border bg-parchment-100/60 px-2 py-2 text-center">
                       <div className="font-display text-[20px] leading-none text-ink sm:text-[24px]">{dc}</div>
@@ -226,7 +251,9 @@ export function SpellSection() {
                     </div>
 
                     <div className="rounded border border-dnd-border bg-parchment-100/60 px-2 py-2 text-center">
-                      <div className="font-display text-[20px] leading-none text-ink sm:text-[24px]">{spellAttackBonus >= 0 ? `+${spellAttackBonus}` : spellAttackBonus}</div>
+                      <div className="font-display text-[20px] leading-none text-ink sm:text-[24px]">
+                        {spellAttackBonus >= 0 ? `+${spellAttackBonus}` : spellAttackBonus}
+                      </div>
                       <div className="mt-1 text-[8px] uppercase tracking-[2px] text-dnd-red">Ataque</div>
                     </div>
                   </div>
@@ -236,11 +263,12 @@ export function SpellSection() {
           })}
         </div>
 
-        <div className="text-[11px] text-ink-light">
+        <div className="mt-2 text-[11px] text-ink-light">
           Organize truques e magias por nível, marque preparo e acompanhe os espaços gastos de cada círculo.
         </div>
       </div>
 
+      {/* ── Espaços de Magia ── */}
       <div className="mb-4 rounded-xl border border-dnd-border bg-parchment-200/60 p-2.5 shadow-inset sm:p-3">
         <div className="mb-2 text-[9px] font-semibold uppercase tracking-[2px] text-dnd-red">Espaços de Magia</div>
         <div className="grid gap-1 sm:grid-cols-2 xl:grid-cols-3">
@@ -257,9 +285,15 @@ export function SpellSection() {
                     onClick={() => toggleSlotLevelExpansion(levelEntry.level)}
                     className="flex w-full items-center gap-2 px-2 py-1.5 text-left transition-colors hover:bg-parchment-100/70"
                   >
-                    <span className="font-serif text-[11px] text-ink flex-1 truncate">{SPELL_LEVEL_LABELS[levelEntry.level]}</span>
-                    <span className="font-display text-[12px] text-ink w-14 text-right">{remainingSlots}/{levelEntry.slotsTotal}</span>
-                    <span className="text-[9px] uppercase tracking-[2px] text-dnd-red">{isExpanded ? "Ocultar" : "Abrir"}</span>
+                    <span className="flex-1 truncate font-serif text-[11px] text-ink">
+                      {SPELL_LEVEL_LABELS[levelEntry.level]}
+                    </span>
+                    <span className="w-14 text-right font-display text-[12px] text-ink">
+                      {remainingSlots}/{levelEntry.slotsTotal}
+                    </span>
+                    <span className="text-[9px] uppercase tracking-[2px] text-dnd-red">
+                      {isExpanded ? "Ocultar" : "Abrir"}
+                    </span>
                   </button>
 
                   {isExpanded && (
@@ -301,213 +335,254 @@ export function SpellSection() {
         </div>
       </div>
 
+      {/* ── Lista de Magias por Nível ── */}
       <div className="space-y-3">
         {store.spellbook
           .filter((levelEntry) => levelEntry.level === 0 || levelEntry.slotsTotal > 0)
           .map((levelEntry) => {
-          const isCantrip = levelEntry.level === 0;
-          return (
-            <div key={levelEntry.level} className="rounded-xl border border-dnd-border bg-parchment-200/60 p-2.5 shadow-inset sm:p-3">
-              <div className="mb-3">
-                <div>
-                  <div className="text-[9px] uppercase tracking-[2px] text-dnd-red font-semibold">{SPELL_LEVEL_LABELS[levelEntry.level]}</div>
+            const isCantrip = levelEntry.level === 0;
+
+            return (
+              <div
+                key={levelEntry.level}
+                className="rounded-xl border border-dnd-border bg-parchment-200/60 p-2.5 shadow-inset sm:p-3"
+              >
+                <div className="mb-3">
+                  <div className="text-[9px] font-semibold uppercase tracking-[2px] text-dnd-red">
+                    {SPELL_LEVEL_LABELS[levelEntry.level]}
+                  </div>
                   <div className="text-[11px] text-ink-light">
-                    {isCantrip ? "Magias de uso livre, sem gastar espaço." : "Lista de magias conhecidas ou preparadas desse círculo."}
+                    {isCantrip
+                      ? "Magias de uso livre, sem gastar espaço."
+                      : "Lista de magias conhecidas ou preparadas desse círculo."}
                   </div>
                 </div>
-              </div>
 
-              {levelEntry.spells.length === 0 ? (
-                <div className="rounded border border-dashed border-dnd-border bg-parchment-100/40 px-3 py-3 text-[12px] text-ink-light">
-                  Nenhuma magia adicionada nesse nível ainda.
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {levelEntry.spells.map((spell) => (
-                    <div key={spell.id} className="rounded border border-dnd-border bg-parchment-100/60 p-2">
-                      <div className="flex items-start gap-2">
-                        <button
-                          type="button"
-                          onClick={() => castSpell(levelEntry.level, spell, levelEntry.slotsTotal, levelEntry.slotsUsed)}
-                          disabled={levelEntry.level > 0 && levelEntry.slotsUsed >= levelEntry.slotsTotal}
-                          title={
-                            levelEntry.level === 0
-                              ? "Conjurar truque"
-                              : levelEntry.slotsUsed >= levelEntry.slotsTotal
-                                ? "Sem espaços restantes nesse nível"
-                                : `Conjurar e gastar 1 espaço de ${SPELL_LEVEL_LABELS[levelEntry.level]}`
-                          }
-                          className="shrink-0 rounded border border-dnd-green/70 bg-dnd-green/15 px-2 py-1 text-[9px] font-semibold uppercase tracking-[1.5px] text-dnd-green transition-colors hover:bg-dnd-green/25 disabled:cursor-not-allowed disabled:opacity-45"
-                        >
-                          Conjurar
-                        </button>
+                {levelEntry.spells.length === 0 ? (
+                  <div className="rounded border border-dashed border-dnd-border bg-parchment-100/40 px-3 py-3 text-[12px] text-ink-light">
+                    Nenhuma magia adicionada nesse nível ainda.
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {levelEntry.spells.map((spell) => (
+                      <div key={spell.id} className={`rounded border ${expandedSpellIds.includes(spell.id) ? 'border-red-600' : 'border-dnd-border'} bg-parchment-100/60 p-2`}>
+                        <div className="flex items-start gap-2">
+                          {/* Botão Conjurar */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              castSpell(levelEntry.level, spell, levelEntry.slotsTotal, levelEntry.slotsUsed)
+                            }
+                            disabled={levelEntry.level > 0 && levelEntry.slotsUsed >= levelEntry.slotsTotal}
+                            title={
+                              levelEntry.level === 0
+                                ? "Conjurar truque"
+                                : levelEntry.slotsUsed >= levelEntry.slotsTotal
+                                  ? "Sem espaços restantes nesse nível"
+                                  : `Conjurar e gastar 1 espaço de ${SPELL_LEVEL_LABELS[levelEntry.level]}`
+                            }
+                            className="shrink-0 rounded border border-dnd-green/70 bg-dnd-green/15 px-2 py-1 text-[9px] font-semibold uppercase tracking-[1.5px] text-dnd-green transition-colors hover:bg-dnd-green/25 disabled:cursor-not-allowed disabled:opacity-45"
+                          >
+                            Conjurar
+                          </button>
 
-                        <button
-                          type="button"
-                          onClick={() => toggleSpellExpansion(spell.id)}
-                          className="flex min-w-0 flex-1 items-center justify-between gap-3 rounded px-1 py-1 text-left transition-colors hover:bg-parchment-200/50"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <div className="truncate font-serif text-[14px] text-ink">
-                              {spell.name.trim() || (isCantrip ? "Novo truque" : "Nova magia")}
+                          {/* Botão expandir/ocultar */}
+                          <button
+                            type="button"
+                            onClick={() => toggleSpellExpansion(spell.id)}
+                            className="flex min-w-0 flex-1 items-center justify-between gap-3 rounded px-1 py-1 text-left transition-colors hover:bg-parchment-200/50"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <div className="truncate font-serif text-[14px] text-ink">
+                                {spell.name.trim() || (isCantrip ? "Novo truque" : "Nova magia")}
+                              </div>
                             </div>
-                          </div>
-
-                          <div className="shrink-0 text-[9px] uppercase tracking-[2px] text-dnd-red">
-                            {expandedSpellIds.includes(spell.id) ? "Ocultar" : "Abrir"}
-                          </div>
-                        </button>
-
-                        <ConfirmDeleteButton onConfirm={() => removeSpell(levelEntry.level, spell.id)} />
-                      </div>
-
-                      {expandedSpellIds.includes(spell.id) && (
-                        <div className="mt-3 space-y-2 border-t border-dnd-border/70 pt-3">
-                          <div>
-                            <FieldLabel>{isCantrip ? "Nome do Truque" : "Nome da Magia"}</FieldLabel>
-                            <input
-                              type="text"
-                              value={spell.name}
-                              onChange={(e) => updateSpell(levelEntry.level, spell.id, { name: e.target.value })}
-                              placeholder={isCantrip ? "Nome do truque" : "Nome da magia"}
-                              className="w-full rounded border border-dnd-border bg-parchment-200/50 px-2 py-1 font-serif text-[12px] text-ink outline-none transition-colors focus:border-dnd-red"
-                            />
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <FieldLabel>Tempo de Conjuração</FieldLabel>
-                              <input
-                                type="text"
-                                value={spell.castingTime}
-                                onChange={(e) => updateSpell(levelEntry.level, spell.id, { castingTime: e.target.value })}
-                                placeholder="1 ação, 1 bônus, reação..."
-                                className="w-full rounded border border-dnd-border bg-parchment-200/50 px-2 py-1 font-serif text-[12px] text-ink outline-none transition-colors focus:border-dnd-red"
-                              />
+                            <div className="shrink-0 text-[9px] uppercase tracking-[2px] text-dnd-red">
+                              {expandedSpellIds.includes(spell.id) ? "Ocultar" : "Abrir"}
                             </div>
+                          </button>
 
-                            <div>
-                              <FieldLabel>Alcance</FieldLabel>
-                              <input
-                                type="text"
-                                value={spell.range}
-                                onChange={(e) => updateSpell(levelEntry.level, spell.id, { range: e.target.value })}
-                                placeholder="Toque, 18m, pessoal, 36m..."
-                                className="w-full rounded border border-dnd-border bg-parchment-200/50 px-2 py-1 font-serif text-[12px] text-ink outline-none transition-colors focus:border-dnd-red"
-                              />
-                            </div>
-
-                            <div className="col-span-2">
-                              <FieldLabel>Duração</FieldLabel>
-                              <input
-                                type="text"
-                                value={spell.duration}
-                                onChange={(e) => updateSpell(levelEntry.level, spell.id, { duration: e.target.value })}
-                                placeholder="Instantânea, 1 minuto, até dissipada..."
-                                className="w-full rounded border border-dnd-border bg-parchment-200/50 px-2 py-1 font-serif text-[12px] text-ink outline-none transition-colors focus:border-dnd-red"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] text-ink sm:flex sm:flex-wrap sm:gap-3">
-                            <button
-                              type="button"
-                              onClick={() => updateSpell(levelEntry.level, spell.id, { prepared: !spell.prepared })}
-                              className="flex items-center gap-1.5"
-                              title="Alternar preparo"
-                            >
-                              <ProfCircle level={spell.prepared ? 2 : 0} size={15} />
-                              <span>{isCantrip ? "Conhecida" : "Preparada"}</span>
-                            </button>
-
-                            <label className="flex items-center gap-1.5">
-                              <input
-                                type="checkbox"
-                                checked={spell.ritual}
-                                onChange={(e) => updateSpell(levelEntry.level, spell.id, { ritual: e.target.checked })}
-                              />
-                              <span>Ritual</span>
-                            </label>
-
-                            <label className="flex items-center gap-1.5">
-                              <input
-                                type="checkbox"
-                                checked={spell.concentration}
-                                onChange={(e) => updateSpell(levelEntry.level, spell.id, { concentration: e.target.checked })}
-                              />
-                              <span>Concentração</span>
-                            </label>
-
-                            <label className="flex items-center gap-1.5">
-                              <input
-                                type="checkbox"
-                                checked={spell.verbal}
-                                onChange={(e) => updateSpell(levelEntry.level, spell.id, { verbal: e.target.checked })}
-                              />
-                              <span>Verbal</span>
-                            </label>
-
-                            <label className="flex items-center gap-1.5">
-                              <input
-                                type="checkbox"
-                                checked={spell.somatic}
-                                onChange={(e) => updateSpell(levelEntry.level, spell.id, { somatic: e.target.checked })}
-                              />
-                              <span>Somático</span>
-                            </label>
-
-                            <label className="flex items-center gap-1.5">
-                              <input
-                                type="checkbox"
-                                checked={spell.material}
-                                onChange={(e) => updateSpell(levelEntry.level, spell.id, { material: e.target.checked })}
-                              />
-                              <span>Material</span>
-                            </label>
-                          </div>
-
-                          <div>
-                            <FieldLabel>Descrição da Magia</FieldLabel>
-                            <textarea
-                              ref={(element) => {
-                                if (element) {
-                                  autoResizeTextarea(element);
-                                }
-                              }}
-                              value={spell.description}
-                              onChange={(e) => {
-                                autoResizeTextarea(e.target);
-                                updateSpell(levelEntry.level, spell.id, { description: e.target.value });
-                              }}
-                              placeholder="Descrição completa da magia, efeito, componentes, duração e observações de uso."
-                              rows={1}
-                              className="w-full overflow-hidden resize-none rounded border border-dnd-border bg-parchment-200/50 p-2 font-serif text-[12px] text-ink outline-none transition-colors focus:border-dnd-red"
-                            />
-                          </div>
-
-                          <div>
-                            <FieldLabel>Notas Rápidas</FieldLabel>
-                            <textarea
-                              value={spell.notes}
-                              onChange={(e) => updateSpell(levelEntry.level, spell.id, { notes: e.target.value })}
-                              placeholder="Notas rápidas de mesa: alvo favorito, combinação, origem ou material gasto."
-                              rows={2}
-                              className="w-full resize-y rounded border border-dnd-border bg-parchment-200/50 p-2 font-serif text-[12px] text-ink outline-none transition-colors focus:border-dnd-red"
-                            />
-                          </div>
+                          <ConfirmDeleteButton onConfirm={() => removeSpell(levelEntry.level, spell.id)} />
                         </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
 
-              <AddRowButton onClick={() => addSpell(levelEntry.level)}>
-                {isCantrip ? "+ Adicionar Truque" : "+ Adicionar Magia"}
-              </AddRowButton>
-            </div>
-          );
-        })}
+                        {/* Detalhes expandidos */}
+                        {expandedSpellIds.includes(spell.id) && (
+                          <div className="mt-3 space-y-2 border-t border-dnd-border/70 pt-3">
+                            <div>
+                              <FieldLabel>{isCantrip ? "Nome do Truque" : "Nome da Magia"}</FieldLabel>
+                              <input
+                                type="text"
+                                value={spell.name}
+                                onChange={(e) => updateSpell(levelEntry.level, spell.id, { name: e.target.value })}
+                                placeholder={isCantrip ? "Nome do truque" : "Nome da magia"}
+                                className="w-full rounded border border-dnd-border bg-parchment-200/50 px-2 py-1 font-serif text-[12px] text-ink outline-none transition-colors focus:border-dnd-red"
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <FieldLabel>Tempo de Conjuração</FieldLabel>
+                                <input
+                                  type="text"
+                                  value={spell.castingTime}
+                                  onChange={(e) =>
+                                    updateSpell(levelEntry.level, spell.id, { castingTime: e.target.value })
+                                  }
+                                  placeholder="1 ação, 1 bônus, reação..."
+                                  className="w-full rounded border border-dnd-border bg-parchment-200/50 px-2 py-1 font-serif text-[12px] text-ink outline-none transition-colors focus:border-dnd-red"
+                                />
+                              </div>
+
+                              <div>
+                                <FieldLabel>Alcance</FieldLabel>
+                                <input
+                                  type="text"
+                                  value={spell.range}
+                                  onChange={(e) =>
+                                    updateSpell(levelEntry.level, spell.id, { range: e.target.value })
+                                  }
+                                  placeholder="Toque, 18m, pessoal, 36m..."
+                                  className="w-full rounded border border-dnd-border bg-parchment-200/50 px-2 py-1 font-serif text-[12px] text-ink outline-none transition-colors focus:border-dnd-red"
+                                />
+                              </div>
+
+                              <div className="col-span-2">
+                                <FieldLabel>Duração</FieldLabel>
+                                <input
+                                  type="text"
+                                  value={spell.duration}
+                                  onChange={(e) =>
+                                    updateSpell(levelEntry.level, spell.id, { duration: e.target.value })
+                                  }
+                                  placeholder="Instantânea, 1 minuto, até dissipada..."
+                                  className="w-full rounded border border-dnd-border bg-parchment-200/50 px-2 py-1 font-serif text-[12px] text-ink outline-none transition-colors focus:border-dnd-red"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Flags / checkboxes */}
+                            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] text-ink sm:flex sm:flex-wrap sm:gap-3">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  updateSpell(levelEntry.level, spell.id, { prepared: !spell.prepared })
+                                }
+                                className="flex items-center gap-1.5"
+                                title="Alternar preparo"
+                              >
+                                <ProfCircle level={spell.prepared ? 2 : 0} size={15} />
+                                <span>{isCantrip ? "Conhecida" : "Preparada"}</span>
+                              </button>
+
+                              <label className="flex items-center gap-1.5">
+                                <input
+                                  type="checkbox"
+                                  checked={spell.ritual}
+                                  onChange={(e) =>
+                                    updateSpell(levelEntry.level, spell.id, { ritual: e.target.checked })
+                                  }
+                                />
+                                <span>Ritual</span>
+                              </label>
+
+                              <label className="flex items-center gap-1.5">
+                                <input
+                                  type="checkbox"
+                                  checked={spell.concentration}
+                                  onChange={(e) =>
+                                    updateSpell(levelEntry.level, spell.id, { concentration: e.target.checked })
+                                  }
+                                />
+                                <span>Concentração</span>
+                              </label>
+
+                              <label className="flex items-center gap-1.5">
+                                <input
+                                  type="checkbox"
+                                  checked={spell.verbal}
+                                  onChange={(e) =>
+                                    updateSpell(levelEntry.level, spell.id, { verbal: e.target.checked })
+                                  }
+                                />
+                                <span>Verbal</span>
+                              </label>
+
+                              <label className="flex items-center gap-1.5">
+                                <input
+                                  type="checkbox"
+                                  checked={spell.somatic}
+                                  onChange={(e) =>
+                                    updateSpell(levelEntry.level, spell.id, { somatic: e.target.checked })
+                                  }
+                                />
+                                <span>Somático</span>
+                              </label>
+
+                              <label className="flex items-center gap-1.5">
+                                <input
+                                  type="checkbox"
+                                  checked={spell.material}
+                                  onChange={(e) =>
+                                    updateSpell(levelEntry.level, spell.id, { material: e.target.checked })
+                                  }
+                                />
+                                <span>Material</span>
+                              </label>
+                            </div>
+
+                            <div>
+                              <FieldLabel>Descrição da Magia</FieldLabel>
+                              <textarea
+                                ref={(element) => {
+                                  if (element) autoResizeTextarea(element);
+                                }}
+                                value={spell.description}
+                                onChange={(e) => {
+                                  autoResizeTextarea(e.target);
+                                  updateSpell(levelEntry.level, spell.id, { description: e.target.value });
+                                }}
+                                placeholder="Descrição completa da magia, efeito, componentes, duração e observações de uso."
+                                rows={1}
+                                className="w-full overflow-hidden resize-none rounded border border-dnd-border bg-parchment-200/50 p-2 font-serif text-[12px] text-ink outline-none transition-colors focus:border-dnd-red"
+                              />
+                            </div>
+
+                            <div>
+                              <FieldLabel>Notas Rápidas</FieldLabel>
+                              <textarea
+                                value={spell.notes}
+                                onChange={(e) =>
+                                  updateSpell(levelEntry.level, spell.id, { notes: e.target.value })
+                                }
+                                placeholder="Notas rápidas de mesa: alvo favorito, combinação, origem ou material gasto."
+                                rows={2}
+                                className="w-full resize-y rounded border border-dnd-border bg-parchment-200/50 p-2 font-serif text-[12px] text-ink outline-none transition-colors focus:border-dnd-red"
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <AddRowButton onClick={() => addSpell(levelEntry.level)}>
+                  {isCantrip ? "+ Adicionar Truque" : "+ Adicionar Magia"}
+                </AddRowButton>
+              </div>
+            );
+          })}
+      </div>
+
+      {/* ── Anotações Gerais ── */}
+      <div className="mt-6">
+        <FieldLabel>Anotações Gerais</FieldLabel>
+        <AutoResizeTextarea
+          value={store.spellNotes || ""}
+          onChange={(val) => store.setField("spellNotes", val)}
+          placeholder="Anotações gerais sobre magias, combinações, efeitos, dúvidas, etc."
+          minRows={4}
+        />
       </div>
     </div>
   );
