@@ -160,6 +160,7 @@ export interface CharacterState {
   hpMax: number;
   hpCurrent: number;
   hpTemp: number;
+  isConcentrating: boolean;
   hitDiceCurrent: string;
   speed: number;
   initiativeBonus: number; // manual override on top of DEX mod
@@ -186,6 +187,8 @@ export interface CharacterState {
   bonusActions: TraitEntry[];
   reactions: TraitEntry[];
   consumableAbilities: ConsumableAbilityEntry[];
+  racialAbilities: TraitEntry[];
+  racialNotes: string;
   subclassPanels: string[];
   subclassTraits: TraitEntry[];
   spellcastingAbility: AttrKey | "";

@@ -11,6 +11,7 @@
     "start": "next start",
     "railway:start": "npm run db:migrate:deploy && next start",
     "lint": "next lint",
+    "admin:list-users": "node scripts/list-users.cjs",
     "admin:reset-password": "node scripts/reset-password.cjs"
   },
   "dependencies": {

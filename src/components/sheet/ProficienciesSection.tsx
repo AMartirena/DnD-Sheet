@@ -6,7 +6,7 @@ import { TRAIT_DESCRIPTIONS } from "@/data/races/raceTraits";
 import { useCharStore } from "@/lib/store";
 import { ARMOR_PROFICIENCY_OPTIONS, WEAPON_PROFICIENCY_OPTIONS } from "@/data/constants";
 import { SectionTitle, FieldLabel, ProfCircle, AddRowButton, ConfirmDeleteButton, TextInput } from "@/components/ui";
-import type { ArmorProfType, BackgroundData, WeaponProfType } from "@/types";
+import type { ArmorProfType, BackgroundData, TraitEntry, WeaponProfType } from "@/types";
 
 function AutoResizeTextarea({
   value,
@@ -109,6 +109,14 @@ function parseRaceTraits(rawTraits: string) {
     .filter(Boolean);
 }
 
+function createRacialAbility(): TraitEntry {
+  return {
+    id: `racial_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    title: "",
+    description: "",
+  };
+}
+
 function BackgroundTraitPanel({ backgroundData, customName }: {
   backgroundData: BackgroundData;
   customName: string;
@@ -150,7 +158,9 @@ function BackgroundTraitPanel({ backgroundData, customName }: {
 }
 
 function RaceTraitPanel({ raceKey }: { raceKey: string }) {
+  const store = useCharStore();
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [expandedCustomId, setExpandedCustomId] = useState<string | null>(null);
   const raceData = RACES[raceKey];
   const traits = parseRaceTraits(raceData?.traits ?? "");
 
@@ -184,6 +194,101 @@ function RaceTraitPanel({ raceKey }: { raceKey: string }) {
           <p className="whitespace-pre-line">{TRAIT_DESCRIPTIONS[traits[expandedIndex]] || traits[expandedIndex]}</p>
         </div>
       )}
+
+      <div className="mt-3 rounded border border-dnd-border bg-parchment-100/70 p-2">
+        <div className="mb-2 flex items-start justify-between gap-2 flex-wrap">
+          <FieldLabel className="mb-0 text-[8px] text-dnd-red font-semibold tracking-[2px]">Habilidades</FieldLabel>
+          <AddRowButton
+            onClick={() =>
+              store.setField("racialAbilities", [...store.racialAbilities, createRacialAbility()])
+            }
+          >
+            + Adicionar Habilidade
+          </AddRowButton>
+        </div>
+
+        {store.racialAbilities.length === 0 ? (
+          <div className="rounded border border-dashed border-dnd-border bg-parchment-100/40 px-2 py-2 text-[10px] text-ink-light">
+            Adicione habilidades extras para manter em formato expansível.
+          </div>
+        ) : (
+          <div className="grid gap-1.5">
+            {store.racialAbilities.map((ability) => {
+              const expanded = expandedCustomId === ability.id;
+              return (
+                <div key={ability.id} className="rounded border border-dnd-border bg-parchment-100/80 px-2 py-1.5">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setExpandedCustomId(expanded ? null : ability.id)}
+                      className="flex-1 text-left text-[10px] text-ink transition hover:text-dnd-red"
+                    >
+                      {ability.title.trim() || "Nova habilidade"}
+                    </button>
+
+                    <ConfirmDeleteButton
+                      onConfirm={() => {
+                        if (expanded) setExpandedCustomId(null);
+                        store.setField(
+                          "racialAbilities",
+                          store.racialAbilities.filter((entry) => entry.id !== ability.id),
+                        );
+                      }}
+                    />
+                  </div>
+
+                  {expanded && (
+                    <div className="mt-2 rounded border border-dnd-border bg-white/70 p-2">
+                      <div className="mb-2">
+                        <FieldLabel className="mb-1 text-[8px] text-dnd-red font-semibold tracking-[2px]">Nome</FieldLabel>
+                        <TextInput
+                          value={ability.title}
+                          onChange={(e) =>
+                            store.setField(
+                              "racialAbilities",
+                              store.racialAbilities.map((entry) =>
+                                entry.id === ability.id ? { ...entry, title: e.target.value } : entry,
+                              ),
+                            )
+                          }
+                          placeholder="Ex: Sangue Feerico, Resistencia Draconica"
+                        />
+                      </div>
+
+                      <div>
+                        <FieldLabel className="mb-1 text-[8px] text-dnd-red font-semibold tracking-[2px]">Descrição</FieldLabel>
+                        <AutoResizeTextarea
+                          value={ability.description}
+                          onChange={(value) =>
+                            store.setField(
+                              "racialAbilities",
+                              store.racialAbilities.map((entry) =>
+                                entry.id === ability.id ? { ...entry, description: value } : entry,
+                              ),
+                            )
+                          }
+                          placeholder="Escreva a habilidade completa aqui."
+                          minRows={5}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <div className="mt-2">
+        <FieldLabel className="mb-1 text-[8px] text-dnd-red font-semibold tracking-[2px]">Anotações</FieldLabel>
+        <AutoResizeTextarea
+          value={store.racialNotes}
+          onChange={(value) => store.setField("racialNotes", value)}
+          placeholder="Use este campo para observações livres sobre traços raciais, limitações ou combinações."
+          minRows={3}
+        />
+      </div>
     </div>
   );
 }

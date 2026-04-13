@@ -103,6 +103,22 @@ export function SpellSection() {
     );
   };
 
+  const castSpell = (level: number, spell: SpellEntry, slotsTotal: number, slotsUsed: number) => {
+    const remainingSlots = Math.max(0, slotsTotal - slotsUsed);
+
+    if (level > 0) {
+      if (remainingSlots <= 0) {
+        return;
+      }
+
+      updateSpellLevel(level, { slotsUsed: slotsUsed + 1 });
+    }
+
+    if (spell.concentration) {
+      store.setField("isConcentrating", true);
+    }
+  };
+
   const removeSpell = (level: number, spellId: string) => {
     setExpandedSpellIds((current) => current.filter((id) => id !== spellId));
     updateSpellbook((spellbook) =>
@@ -232,6 +248,7 @@ export function SpellSection() {
             .filter((levelEntry) => levelEntry.level > 0)
             .map((levelEntry) => {
               const isExpanded = expandedSlotLevels.includes(levelEntry.level);
+              const remainingSlots = Math.max(0, levelEntry.slotsTotal - levelEntry.slotsUsed);
 
               return (
                 <div key={`slots-${levelEntry.level}`} className="rounded border border-dnd-border bg-parchment-100/50">
@@ -241,7 +258,7 @@ export function SpellSection() {
                     className="flex w-full items-center gap-2 px-2 py-1.5 text-left transition-colors hover:bg-parchment-100/70"
                   >
                     <span className="font-serif text-[11px] text-ink flex-1 truncate">{SPELL_LEVEL_LABELS[levelEntry.level]}</span>
-                    <span className="font-display text-[12px] text-ink w-12 text-right">{levelEntry.slotsUsed}/{levelEntry.slotsTotal}</span>
+                    <span className="font-display text-[12px] text-ink w-14 text-right">{remainingSlots}/{levelEntry.slotsTotal}</span>
                     <span className="text-[9px] uppercase tracking-[2px] text-dnd-red">{isExpanded ? "Ocultar" : "Abrir"}</span>
                   </button>
 
@@ -263,13 +280,14 @@ export function SpellSection() {
                       </div>
 
                       <div>
-                        <FieldLabel>Gastos</FieldLabel>
+                        <FieldLabel>Restantes</FieldLabel>
                         <NumberInput
-                          value={levelEntry.slotsUsed}
+                          value={remainingSlots}
                           onChange={(e) => {
-                            const slotsUsed = Math.max(0, parseInt(e.target.value, 10) || 0);
+                            const parsedRemaining = Math.max(0, parseInt(e.target.value, 10) || 0);
+                            const nextRemaining = Math.min(parsedRemaining, levelEntry.slotsTotal);
                             updateSpellLevel(levelEntry.level, {
-                              slotsUsed: Math.min(slotsUsed, levelEntry.slotsTotal),
+                              slotsUsed: levelEntry.slotsTotal - nextRemaining,
                             });
                           }}
                           className="w-full text-base"
@@ -308,6 +326,22 @@ export function SpellSection() {
                   {levelEntry.spells.map((spell) => (
                     <div key={spell.id} className="rounded border border-dnd-border bg-parchment-100/60 p-2">
                       <div className="flex items-start gap-2">
+                        <button
+                          type="button"
+                          onClick={() => castSpell(levelEntry.level, spell, levelEntry.slotsTotal, levelEntry.slotsUsed)}
+                          disabled={levelEntry.level > 0 && levelEntry.slotsUsed >= levelEntry.slotsTotal}
+                          title={
+                            levelEntry.level === 0
+                              ? "Conjurar truque"
+                              : levelEntry.slotsUsed >= levelEntry.slotsTotal
+                                ? "Sem espaços restantes nesse nível"
+                                : `Conjurar e gastar 1 espaço de ${SPELL_LEVEL_LABELS[levelEntry.level]}`
+                          }
+                          className="shrink-0 rounded border border-dnd-green/70 bg-dnd-green/15 px-2 py-1 text-[9px] font-semibold uppercase tracking-[1.5px] text-dnd-green transition-colors hover:bg-dnd-green/25 disabled:cursor-not-allowed disabled:opacity-45"
+                        >
+                          Conjurar
+                        </button>
+
                         <button
                           type="button"
                           onClick={() => toggleSpellExpansion(spell.id)}

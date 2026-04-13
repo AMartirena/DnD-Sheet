@@ -1,7 +1,7 @@
 "use client";
 import { useCharStore } from "@/lib/store";
 import { getTotalLevel, getHitDiceSummary, getProfBonus, totalCA, initiativeTotal, fmtMod } from "@/lib/calc";
-import { SectionTitle, NumberInput, DeathDot } from "@/components/ui";
+import { SectionTitle, NumberInput, DeathDot, ToggleSwitch } from "@/components/ui";
 
 export function CombatSection() {
   const store = useCharStore();
@@ -70,7 +70,16 @@ export function CombatSection() {
 
         {/* HP */}
         <div className="bg-parchment-200/60 border border-dnd-border rounded p-2.5 shadow-inset sm:p-3">
-          <div className="text-[9px] tracking-[2px] uppercase text-dnd-red font-semibold mb-2">Pontos de Vida</div>
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <div className="text-[9px] tracking-[2px] uppercase text-dnd-red font-semibold">Pontos de Vida</div>
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] uppercase tracking-[2px] text-ink-light">Concentração</span>
+              <ToggleSwitch
+                checked={store.isConcentrating}
+                onChange={(checked) => store.setField("isConcentrating", checked)}
+              />
+            </div>
+          </div>
           {[
             { label: "Máx",   field: "hpMax" as const,     size: "text-2xl" },
             { label: "Atual", field: "hpCurrent" as const,  size: "text-2xl" },

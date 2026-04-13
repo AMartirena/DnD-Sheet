@@ -104,6 +104,7 @@ export function createDefaultCharacterState(): CharacterState {
     hpMax: 0,
     hpCurrent: 0,
     hpTemp: 0,
+    isConcentrating: false,
     hitDiceCurrent: "",
     speed: 9,
     initiativeBonus: 0,
@@ -142,6 +143,8 @@ export function createDefaultCharacterState(): CharacterState {
     bonusActions: [],
     reactions: [],
     consumableAbilities: [],
+    racialAbilities: [],
+    racialNotes: "",
     subclassPanels: [],
     subclassTraits: [],
     spellcastingAbility: "",
@@ -163,6 +166,7 @@ export function normalizeCharacterState(input: unknown): CharacterState {
     attrs: { ...fallback.attrs, ...(data.attrs ?? {}) },
     savingThrowProfs: { ...fallback.savingThrowProfs, ...(data.savingThrowProfs ?? {}) },
     skillProfs: { ...fallback.skillProfs, ...(data.skillProfs ?? {}) },
+    isConcentrating: data.isConcentrating ?? fallback.isConcentrating,
     deathSaves: {
       successes: data.deathSaves?.successes ?? fallback.deathSaves.successes,
       failures: data.deathSaves?.failures ?? fallback.deathSaves.failures,
@@ -180,6 +184,8 @@ export function normalizeCharacterState(input: unknown): CharacterState {
     consumableAbilities: Array.isArray(data.consumableAbilities)
       ? data.consumableAbilities.map(normalizeConsumableAbility)
       : fallback.consumableAbilities,
+    racialAbilities: Array.isArray(data.racialAbilities) ? data.racialAbilities : fallback.racialAbilities,
+    racialNotes: typeof data.racialNotes === "string" ? data.racialNotes : fallback.racialNotes,
     subclassPanels: Array.isArray(data.subclassPanels) ? data.subclassPanels : fallback.subclassPanels,
     subclassTraits: Array.isArray(data.subclassTraits) ? data.subclassTraits : fallback.subclassTraits,
     spellcastingProfiles: Array.isArray(data.spellcastingProfiles) && data.spellcastingProfiles.length > 0
