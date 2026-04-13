@@ -8,6 +8,7 @@ import type { AttrKey } from "@/types";
 export function AttributesSection() {
   const store = useCharStore();
   const prof = getProfBonus(getTotalLevel(store));
+  const orderedAttrs: AttrKey[] = ["str", "dex", "con", "int", "wis", "cha"];
   const attrMap = Object.fromEntries(ATTR_LIST.map((attr) => [attr.id, attr])) as Record<AttrKey, (typeof ATTR_LIST)[number]>;
 
   const renderAttributeCard = (attrId: AttrKey) => {
@@ -19,7 +20,7 @@ export function AttributesSection() {
       .filter(({ skill }) => skill.attr === attr.id);
 
     return (
-      <div key={attr.id} className="flex flex-col gap-1 break-inside-avoid">
+      <div className="flex flex-col gap-1 break-inside-avoid">
         <div className="bg-parchment-200/60 border border-dnd-border rounded-xl p-2 shadow-inset text-center">
           <div className="text-[7px] tracking-[2px] uppercase text-dnd-red font-semibold">
             {attr.short}
@@ -96,21 +97,18 @@ export function AttributesSection() {
 
       <ProficiencyLegend className="mb-3" />
 
-      <div className="print-attributes-grid mb-4 grid grid-cols-1 gap-2 md:grid-cols-2 md:items-end">
-        <div className="print-attributes-column flex min-w-0 flex-col justify-end space-y-2">
-          <div className="bg-parchment-200/60 border border-dnd-border rounded-xl px-2 py-2 shadow-inset text-center">
-            <div className="text-[7px] tracking-[2px] uppercase text-dnd-red font-semibold">Prof</div>
-            <div className="font-display text-[20px] text-ink leading-none mt-1">{fmtMod(prof)}</div>
-            <div className="text-[7px] tracking-[1px] uppercase text-ink-light mt-1">Bônus</div>
+      <div className="print-attributes-grid mb-4 grid grid-cols-2 gap-2">
+        <div className="col-span-2 mx-auto w-full max-w-[150px] bg-parchment-200/60 border border-dnd-border rounded-xl px-2 py-2 shadow-inset text-center">
+          <div className="text-[7px] tracking-[2px] uppercase text-dnd-red font-semibold">Prof</div>
+          <div className="font-display text-[20px] text-ink leading-none mt-1">{fmtMod(prof)}</div>
+          <div className="text-[7px] tracking-[1px] uppercase text-ink-light mt-1">Bônus</div>
+        </div>
+
+        {orderedAttrs.map((attrId) => (
+          <div key={attrId} className="mx-auto w-full max-w-[150px] min-w-0">
+            {renderAttributeCard(attrId)}
           </div>
-
-          {(["str", "con", "wis"] as AttrKey[]).map(renderAttributeCard)}
-        </div>
-
-        <div className="print-attributes-column flex min-w-0 flex-col justify-end space-y-2">
-          {renderAttributeCard("dex")}
-          {(["int", "cha"] as AttrKey[]).map(renderAttributeCard)}
-        </div>
+        ))}
       </div>
 
       {/* Passivas */}
