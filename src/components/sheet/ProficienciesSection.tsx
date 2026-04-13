@@ -359,7 +359,6 @@ function SubclassTraitPanel({ classId, subclassName, className }: {
                         value={trait.description}
                         onChange={value => store.updateSubclassTrait(trait.id, { description: value })}
                         placeholder="Escreva a habilidade completa aqui."
-                        className="w-full rounded border border-dnd-border bg-parchment-100/70 p-1.5 font-serif text-[11px] text-ink outline-none transition-colors focus:border-dnd-red"
                       />
                     </div>
                   </div>
