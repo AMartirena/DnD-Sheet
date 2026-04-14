@@ -197,4 +197,5 @@ export interface CharacterState {
   spellAttackBonus: number; // calculated
   spellcastingProfiles: SpellcastingProfile[];
   spellbook: SpellLevelState[];
+  spellNotes: string; 
 }
