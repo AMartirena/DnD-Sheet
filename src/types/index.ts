@@ -142,6 +142,7 @@ export interface CharacterState {
   backgroundKey: string;
   background: string;
   alignment: string;
+  spellNotes?: string;
 
 
   // Classes

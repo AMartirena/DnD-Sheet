@@ -558,10 +558,8 @@ export function SpellSection() {
                             <div>
                               <FieldLabel>Notas Rápidas</FieldLabel>
                               <textarea
-                                value={spell.notes}
-                                onChange={(e) =>
-                                  updateSpell(levelEntry.level, spell.id, { notes: e.target.value })
-                                }
+                                value={(store as any).spellNotes || ""}
+                                onChange={(e) => (store as any).spellNotes = e.target.value}
                                 placeholder="Notas rápidas de mesa: alvo favorito, combinação, origem ou material gasto."
                                 rows={2}
                                 className="w-full resize-y rounded border border-dnd-border bg-parchment-200/50 p-2 font-serif text-[12px] text-ink outline-none transition-colors focus:border-dnd-red"
