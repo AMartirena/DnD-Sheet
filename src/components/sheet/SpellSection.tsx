@@ -7,7 +7,15 @@ import { AddRowButton, ConfirmDeleteButton, FieldLabel, NumberInput, ProfCircle,
 import type { AttrKey, SpellEntry, SpellLevelState, SpellcastingProfile } from "@/types";
 
 // Textarea autoexpansível para anotações gerais
-function AutoResizeTextarea({ value, onChange, placeholder, minRows = 3, className = "" }) {
+type AutoResizeTextareaProps = {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  minRows?: number;
+  className?: string;
+};
+
+function AutoResizeTextarea({ value, onChange, placeholder, minRows = 3, className = "" }: AutoResizeTextareaProps) {
   const textareaRef = useRef(null);
   useLayoutEffect(() => {
     const textarea = textareaRef.current;
