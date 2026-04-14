@@ -16,7 +16,7 @@ type AutoResizeTextareaProps = {
 };
 
 function AutoResizeTextarea({ value, onChange, placeholder, minRows = 3, className = "" }: AutoResizeTextareaProps) {
-  const textareaRef = useRef(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   useLayoutEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
