@@ -1,9 +1,10 @@
 "use client";
 import { useCharStore } from "@/lib/store";
 import { ATTR_LIST, SKILLS, PASSIVE_SKILLS } from "@/data/constants";
-import { getTotalLevel, getProfBonus, getMod, fmtMod, savingThrowBonus, skillBonus } from "@/lib/calc";
+import { getTotalLevel, getProfBonus, getMod, fmtMod } from "@/lib/calc";
 import { SectionTitle, ProfCircle, ProficiencyLegend } from "@/components/ui";
 import type { AttrKey } from "@/types";
+import { RACES } from "@/data/races";
 
 export function AttributesSection() {
   const store = useCharStore();
@@ -14,8 +15,9 @@ export function AttributesSection() {
   const renderAttributeCard = (attrId: AttrKey) => {
     const attr = attrMap[attrId];
     const base = store.attrs[attr.id];
+    const racialBonus = RACES[store.raceKey]?.asi?.[attr.id] ?? 0;
     const mod = getMod(base);
-    const saveBonus = savingThrowBonus(store, attr.id, prof);
+    const saveBonus = mod + (store.savingThrowProfs[attr.id] ? prof : 0);
     const attrSkills = SKILLS.map((skill, index) => ({ skill, index }))
       .filter(({ skill }) => skill.attr === attr.id);
 
@@ -28,17 +30,27 @@ export function AttributesSection() {
           <div className="text-[9px] uppercase text-ink-light tracking-[1px] mb-1">
             {attr.name}
           </div>
-          <input
-            type="number"
-            value={base}
-            min={0}
-            max={30}
-            onChange={(e) => store.setAttr(attr.id, parseInt(e.target.value) || 0)}
-            className="w-12 h-12 rounded-full border-2 border-dnd-border bg-parchment-200 font-display text-[18px]
-                       text-ink text-center outline-none focus:border-dnd-red transition-colors
-                       [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            title="Valor base (com bônus racial)"
-          />
+
+          {/* Círculo editável — valor base; badge mostra bônus racial */}
+          <div className="relative inline-block">
+            <input
+              type="number"
+              value={base}
+              min={0}
+              max={30}
+              onChange={(e) => store.setAttr(attr.id, parseInt(e.target.value) || 0)}
+              className="w-12 h-12 rounded-full border-2 border-dnd-border bg-parchment-200 font-display text-[18px]
+                         text-ink text-center outline-none focus:border-dnd-red transition-colors
+                         [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              title={racialBonus !== 0 ? `Base: ${base} + Racial: ${racialBonus}` : `Base: ${base}`}
+            />
+            {racialBonus !== 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-dnd-red text-white text-[7px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none pointer-events-none">
+                +{racialBonus}
+              </span>
+            )}
+          </div>
+
           <div className="mt-1">
             <div className="font-display text-[18px] text-ink font-bold leading-none">{fmtMod(mod)}</div>
             <div className="text-[7px] tracking-[1px] uppercase text-ink-light mt-0.5">Mod</div>
@@ -65,8 +77,10 @@ export function AttributesSection() {
             <div className="text-[7px] tracking-[2px] uppercase text-dnd-red font-semibold mb-0.5">Perícias</div>
             <div className="flex flex-col gap-0.5">
               {attrSkills.map(({ skill, index }) => {
-                const bonus = skillBonus(store, index, prof);
-                const level = (store.skillProfs[index] ?? 0) as 0 | 1 | 2 | 3;
+                const lvlForBonus = (store.skillProfs[index] ?? 0) as 0 | 1 | 2 | 3;
+                const profPart = lvlForBonus === 0 ? 0 : lvlForBonus === 1 ? Math.floor(prof / 2) : lvlForBonus === 2 ? prof : prof * 2;
+                const bonus = mod + profPart;
+                const level = lvlForBonus;
                 return (
                   <div
                     key={skill.name}
@@ -115,7 +129,11 @@ export function AttributesSection() {
       <div className="print-passive-grid grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
         {PASSIVE_SKILLS.map(({ label, skillName }) => {
           const index = SKILLS.findIndex((s) => s.name === skillName);
-          const bonus = index >= 0 ? skillBonus(store, index, prof) : 0;
+          const skill = index >= 0 ? SKILLS[index] : null;
+          const passiveMod = skill ? getMod(store.attrs[skill.attr]) : 0;
+          const passiveProf = index >= 0 ? (store.skillProfs[index] ?? 0) as 0 | 1 | 2 | 3 : 0;
+          const passiveProfPart = passiveProf === 0 ? 0 : passiveProf === 1 ? Math.floor(prof / 2) : passiveProf === 2 ? prof : prof * 2;
+          const bonus = passiveMod + passiveProfPart;
           return (
             <div key={label} className="bg-parchment-200/60 border border-dnd-border rounded px-3 py-2 text-center shadow-inset sm:px-4">
               <span className="font-display text-[20px] text-ink block leading-none">{10 + bonus}</span>

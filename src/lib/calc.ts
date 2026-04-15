@@ -1,6 +1,5 @@
 import type { AttrKey, ProfLevel, CharacterState, SpellcastingProfile } from "@/types";
 import { SKILLS } from "@/data/constants";
-import { RACES } from "@/data/races";
 
 /** Ability modifier from score */
 export const getMod = (score: number): number => Math.floor((score - 10) / 2);
@@ -33,18 +32,17 @@ export const getHitDiceSummary = (state: Pick<CharacterState, "classes">): strin
 export const getProfBonus = (totalLevel: number): number =>
   Math.ceil(totalLevel / 4) + 1;
 
-/** Effective attribute score (base + racial bonus) */
+/** Effective attribute score (AGORA = APENAS BASE) */
 export const effectiveAttr = (
-  state: Pick<CharacterState, "attrs" | "raceKey">,
+  state: Pick<CharacterState, "attrs">,
   key: AttrKey
 ): number => {
-  const racial = RACES[state.raceKey]?.asi?.[key] ?? 0;
-  return (state.attrs[key] ?? 10) + racial;
+  return state.attrs[key] ?? 10;
 };
 
-/** Modifier for an attribute, including racial bonus */
+/** Modifier for an attribute */
 export const attrMod = (
-  state: Pick<CharacterState, "attrs" | "raceKey">,
+  state: Pick<CharacterState, "attrs">,
   key: AttrKey
 ): number => getMod(effectiveAttr(state, key));
 
@@ -66,81 +64,85 @@ export const skillBonus = (
 ): number => {
   const skill = SKILLS[skillIndex];
   if (!skill) return 0;
+
   const mod = attrMod(state, skill.attr);
   const lvl: ProfLevel = state.skillProfs[skillIndex] ?? 0;
+
   if (lvl === 0) return mod;
   if (lvl === 1) return mod + Math.floor(profBonus / 2);
   if (lvl === 2) return mod + profBonus;
-  return mod + profBonus * 2; // expert
+  return mod + profBonus * 2;
 };
 
 /** Passive score = 10 + bonus */
 export const passiveScore = (bonus: number): number => 10 + bonus;
 
-/** Initiative = DEX mod (player can add manual bonus on top) */
+/** Initiative */
 export const initiativeTotal = (state: CharacterState): number => {
-  const racial = RACES[state.raceKey]?.asi?.dex ?? 0;
-  const dexMod = getMod((state.attrs.dex ?? 10) + racial);
-  return dexMod + state.initiativeBonus;
+  return attrMod(state, "dex") + state.initiativeBonus;
 };
 
-/** Total CA = 10 + DEX mod (limited by armor type) + equipped armor/shield bonuses */
-export const totalCA = (state: Pick<CharacterState, "armors" | "attrs" | "raceKey" | "classes">): number => {
+/** Total CA */
+export const totalCA = (
+  state: Pick<CharacterState, "armors" | "attrs" | "classes">
+): number => {
   const dexMod = attrMod(state, "dex");
   const equipped = state.armors.filter((a) => a.equipped);
 
-  // Check for Unarmored Defense
+  const shields = equipped.filter((a) => a.type.toLowerCase() === "escudo");
+  const armors = equipped.filter(
+    (a) => a.type.toLowerCase() !== "escudo" && a.type.toLowerCase() !== "natural"
+  );
+
+  const hasArmor = armors.length > 0;
+
+  //  Defesa sem armadura
   const unarmoredDefense = equipped.find(a => a.type.toLowerCase() === "natural");
-  if (unarmoredDefense) {
+
+  if (unarmoredDefense && !hasArmor) {
     const hasMonk = state.classes.some(c => c.name.toLowerCase().includes("monge"));
-    const hasBarbarian = state.classes.some(c => c.name.toLowerCase().includes("bárbaro") || c.name.toLowerCase().includes("barbarian"));
+    const hasBarbarian = state.classes.some(
+      c => c.name.toLowerCase().includes("bárbaro") || c.name.toLowerCase().includes("barbarian")
+    );
 
     if (unarmoredDefense.name.includes("Monge") && hasMonk) {
-      const wisMod = attrMod(state, "wis");
-      return 10 + dexMod + wisMod;
-    } else if (unarmoredDefense.name.includes("Bárbaro") && hasBarbarian) {
-      const conMod = attrMod(state, "con");
-      return 10 + dexMod + conMod;
+      return 10 + dexMod + attrMod(state, "wis");
+    }
+
+    if (unarmoredDefense.name.includes("Bárbaro") && hasBarbarian) {
+      return 10 + dexMod + attrMod(state, "con");
     }
   }
 
-  // Normal armor calculation
-  const shields = equipped.filter((a) => a.type.toLowerCase() === "escudo");
-  const armors = equipped.filter((a) => a.type.toLowerCase() !== "escudo" && a.type.toLowerCase() !== "natural");
-
-  // Determine the most restrictive armor type and max dex
+  // Armadura normal
   const armorTypes = armors.map(a => a.type.toLowerCase());
+
   let armorType: "leve" | "média" | "pesada" | null = null;
-  let maxDexBonus = 99; // Unlimited
+  let maxDexBonus = 99;
+
   if (armorTypes.includes("pesada")) {
     armorType = "pesada";
     maxDexBonus = 0;
   } else if (armorTypes.includes("média")) {
     armorType = "média";
-    // Find the lowest maxDex among equipped medium armors
     const mediumArmors = armors.filter(a => a.type.toLowerCase() === "média");
     maxDexBonus = Math.min(...mediumArmors.map(a => a.maxDex ?? 2));
   } else if (armorTypes.includes("leve")) {
     armorType = "leve";
   }
 
-  // Calculate DEX bonus based on armor type
   let dexBonus = dexMod;
-  if (armorType === "pesada") {
-    dexBonus = 0;
-  } else if (armorType === "média") {
-    dexBonus = Math.min(dexMod, maxDexBonus);
-  }
-  // For light or no armor, dexBonus = dexMod
 
-  // Sum armor bonuses + shield bonuses (shields give +2 each)
+  if (armorType === "pesada") dexBonus = 0;
+  if (armorType === "média") dexBonus = Math.min(dexMod, maxDexBonus);
+
   const armorBonus = armors.reduce((s, a) => s + a.bonusCA, 0);
-  const shieldBonus = shields.length * 2;
+  const shieldBonus = shields.length > 0 ? 2 : 0;
 
   return 10 + dexBonus + armorBonus + shieldBonus;
 };
 
-/** Attack bonus for an attack entry */
+/** Attack bonus */
 export const attackBonus = (
   state: CharacterState,
   attribute: string,
@@ -148,11 +150,14 @@ export const attackBonus = (
   profBonus: number
 ): number => {
   const ATTR_MAP: Record<string, AttrKey> = {
-    FOR:"str", DES:"dex", CON:"con", INT:"int", SAB:"wis", CAR:"cha",
+    FOR: "str", DES: "dex", CON: "con", INT: "int", SAB: "wis", CAR: "cha",
   };
+
   if (attribute === "Feitiço") return bonusExtra;
+
   const key = ATTR_MAP[attribute];
   if (!key) return bonusExtra;
+
   return attrMod(state, key) + profBonus + bonusExtra;
 };
 
@@ -164,10 +169,11 @@ export const spellSaveDC = (
 ): number => {
   const ability = abilityOverride ?? state.spellcastingAbility;
   if (!ability) return 0;
+
   return 8 + profBonus + attrMod(state, ability);
 };
 
-/** Spellcasting attack bonus */
+/** Spell attack bonus */
 export const spellAttackBonusFn = (
   state: CharacterState,
   profBonus: number,
@@ -175,5 +181,6 @@ export const spellAttackBonusFn = (
 ): number => {
   const ability = abilityOverride ?? state.spellcastingAbility;
   if (!ability) return 0;
+
   return profBonus + attrMod(state, ability);
 };
