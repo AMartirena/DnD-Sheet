@@ -65,6 +65,7 @@ export interface BackgroundData {
   bonuses: string;
   featureName: string;
   featureDescription: string;
+  equipment?: string;
 }
 
 // ─── Death saves ──────────────────────────────────────────────────────────

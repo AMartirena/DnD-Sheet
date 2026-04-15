@@ -6,5 +6,6 @@ export const guild_artisan: BackgroundData = {
   bonuses: "Perícias: Intuição, Persuasão • Ferramentas: 1 ferramenta de artesão • Idiomas: 1 à escolha",
   featureName: "Membro de Guilda",
   featureDescription:
-    "Você pertence a uma guilda estabelecida, com acesso a alojamento, apoio de colegas e conexões comerciais em cidades que abrigam sua organização.",
+    "Guildas são encontradas, geralmente, em cidades grandes o suficiente para suportar inúmeros artesãos praticando o mesmo negócio. No entanto, sua guilda, ao invés disso, pode ser uma rede de artesãos, cada um trabalhando em uma vila diferente dentro de um reino maior. Converse com o Mestre para determinar a natureza da sua guilda. Você pode escolher seu negócio da guilda da tabela Negócios da Guilda ou rolar aleatoriamente.",
+    equipment: "Um conjunto de ferramentas de artesão (à sua escolha), uma carta de apresentação da sua guilda, um conjunto de roupas de viajante e uma algibeira com 15 po",
 };

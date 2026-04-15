@@ -84,13 +84,23 @@ function buildBackgroundEntries(backgroundData: BackgroundData) {
       description: entry,
     }));
 
-  return [
+  const entries = [
     ...bonusEntries,
     {
       title: backgroundData.featureName,
       description: backgroundData.featureDescription,
     },
   ];
+
+  // Adiciona equipamentos como entrada expansível, se existir
+  if (backgroundData.equipment) {
+    entries.push({
+      title: "Equipamentos",
+      description: backgroundData.equipment,
+    });
+  }
+
+  return entries;
 }
 
 function parseRaceTraits(rawTraits: string) {
