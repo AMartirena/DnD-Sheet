@@ -162,7 +162,7 @@ export function CharacterHeader() {
               longRest();
             }
           }}
-          className="inline-flex rounded border border-dnd-green/50 bg-dnd-green/5 px-3 py-1.5 text-[9px] uppercase tracking-wide text-dnd-green transition-colors hover:border-dnd-green hover:bg-dnd-green/10"
+          className="inline-flex rounded border border-dnd-green/70 bg-dnd-green/25 px-3 py-1.5 text-[9px] uppercase tracking-wide text-dnd-green transition-colors hover:border-dnd-green hover:bg-dnd-green/10"
         >
           Descanso Longo
         </button>

@@ -290,7 +290,7 @@ export function AttacksSection() {
     <div className="print-half-section mb-5">
       <SectionTitle>Ataques &amp; Equipamentos de Combate</SectionTitle>
       <div className="overflow-x-auto">
-        <table className="w-full text-[12px]">
+        <table className="w-full text-[2px]">
           <thead>
             <tr>
               {["Selecionar","Dano","Tipo","Alcance","Propriedades","Notas",""].map((h) => (
@@ -311,7 +311,7 @@ export function AttacksSection() {
               return (
                 <tr key={atk.id} className="border-b border-dnd-border/30 last:border-0 hover:bg-parchment-100/50">
                   {/* Weapon Select */}
-                  <td className="px-1.5 py-1.5 w-48">
+                  <td className="px-1.5 py-1.5 w-18">
                     <select
                       value={isCustom ? "Outro/Personalizado" : atk.name}
                       onChange={(e) => handleWeaponSelect(atk.id, e.target.value)}
@@ -351,7 +351,7 @@ export function AttacksSection() {
                   </td>
 
                   {/* Damage */}
-                  <td className="px-1.5 py-1.5 w-16">
+                  <td className="px-1.5 py-1.5 w-6">
                     {isCustom ? (
                       <input
                         type="text"
@@ -367,7 +367,7 @@ export function AttacksSection() {
                   </td>
 
                   {/* Damage type */}
-                  <td className="px-1.5 py-1.5 w-28">
+                  <td className="px-1.5 py-1.5 w-18">
                     {isCustom ? (
                       <select
                         value={atk.damageType}
@@ -382,7 +382,7 @@ export function AttacksSection() {
                   </td>
 
                   {/* Range */}
-                  <td className="px-1.5 py-1.5 min-w-[90px]">
+                  <td className="px-1.5 py-1.5 min-w-[02px]">
                     {isCustom ? (
                       <input
                         type="text"
@@ -398,7 +398,7 @@ export function AttacksSection() {
                   </td>
 
                   {/* Properties */}
-                  <td className="px-1.5 py-1.5 min-w-[90px]">
+                  <td className="px-1.5 py-1.5 min-w-[5px]">
                     {isCustom ? (
                       <input
                         type="text"
@@ -412,7 +412,7 @@ export function AttacksSection() {
                       <span className="font-serif text-[12px] text-ink">{atk.properties}</span>
                     )}
                   </td>
-                  <td className="px-1.5 py-1.5 min-w-[80px]">
+                  <td className="px-1.5 py-1.5 min-w-[100px]">
                     <input
                       type="text"
                       value={atk.notes}
