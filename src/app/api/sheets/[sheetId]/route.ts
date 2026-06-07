@@ -9,6 +9,7 @@ type Params = {
 };
 
 export async function GET(_request: Request, { params }: Params) {
+  const { sheetId } = await params as unknown as { sheetId: string };
   const user = await requireCurrentUser();
 
   if (!user) {
@@ -17,7 +18,7 @@ export async function GET(_request: Request, { params }: Params) {
 
   const sheet = await prisma.sheet.findFirst({
     where: {
-      id: params.sheetId,
+      id: sheetId,
       userId: user.id,
     },
   });
@@ -38,6 +39,7 @@ export async function GET(_request: Request, { params }: Params) {
 }
 
 export async function PUT(request: Request, { params }: Params) {
+  const { sheetId } = await params as unknown as { sheetId: string };
   const user = await requireCurrentUser();
 
   if (!user) {
@@ -53,7 +55,7 @@ export async function PUT(request: Request, { params }: Params) {
 
   const existing = await prisma.sheet.findFirst({
     where: {
-      id: params.sheetId,
+      id: sheetId,
       userId: user.id,
     },
   });
@@ -79,6 +81,7 @@ export async function PUT(request: Request, { params }: Params) {
 }
 
 export async function DELETE(_request: Request, { params }: Params) {
+  const { sheetId } = await params as unknown as { sheetId: string };
   const user = await requireCurrentUser();
 
   if (!user) {
@@ -87,7 +90,7 @@ export async function DELETE(_request: Request, { params }: Params) {
 
   const existing = await prisma.sheet.findFirst({
     where: {
-      id: params.sheetId,
+      id: sheetId,
       userId: user.id,
     },
     select: { id: true },

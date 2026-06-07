@@ -15,6 +15,7 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   sheets       Sheet[]
+   soundButtons SoundButton[] 
 }
 
 model Sheet {
@@ -25,6 +26,23 @@ model Sheet {
   updatedAt DateTime @updatedAt
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, updatedAt])
+}
+
+model SoundButton {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  url       String
+  category  String   @default("geral")
+  color     String   @default("#7a5c2e")
+  volume    Float    @default(1.0)
+  loop      Boolean  @default(false)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId, updatedAt])
 }

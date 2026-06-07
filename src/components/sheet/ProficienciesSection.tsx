@@ -55,11 +55,19 @@ function ProfPinGroup<T extends string>({
       {options.map((option) => {
         const active = values[option.key];
         return (
-          <button
+          <div
             key={option.key}
-            type="button"
+            role="button"
+            tabIndex={0}
             onClick={() => onToggle(option.key)}
-            className="flex items-center gap-1.5 rounded px-1 py-0.5 text-left hover:bg-parchment-100/50"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+                e.preventDefault();
+                onToggle(option.key);
+              }
+            }}
+            aria-pressed={active}
+            className="flex items-center gap-1.5 rounded px-1 py-0.5 text-left hover:bg-parchment-100/50 cursor-pointer"
           >
             <ProfCircle
               level={active ? 2 : 0}
@@ -67,7 +75,7 @@ function ProfPinGroup<T extends string>({
               size={12}
             />
             <span className="font-serif text-[10px] leading-none text-ink">{option.label}</span>
-          </button>
+          </div>
         );
       })}
     </div>

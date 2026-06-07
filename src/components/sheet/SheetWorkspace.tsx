@@ -295,6 +295,10 @@ export function SheetWorkspace({
     router.refresh();
   };
 
+  <a href="/soundboard" className="rounded border border-dnd-border px-3 py-2 text-[11px] uppercase tracking-[2px] text-ink hover:bg-parchment-100/70 transition-colors">
+    Sound Board
+  </a>
+
   const exportPdf = () => {
     window.print();
   };
@@ -304,6 +308,10 @@ export function SheetWorkspace({
       <div className="mx-auto max-w-[1280px]">
         <div className="workspace-toolbar mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dnd-border bg-parchment-200/70 px-4 py-3 shadow-inset">
           <div>
+           <a  href="/soundboard" className="rounded border border-dnd-border px-3 py-2 text-[11px] uppercase tracking-[2px] text-ink hover:bg-parchment-100/70 transition-colors">
+              🎵Sound Board
+            </a>  
+           
             <div className="font-display text-[18px] text-ink">Fichas Salvas</div>
             <div className="text-[12px] text-ink-light">
               {user.name ? `${user.name} • ${user.email}` : user.email}
