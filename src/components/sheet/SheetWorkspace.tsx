@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CharacterSheet } from "@/components/sheet/CharacterSheet";
 import { createDefaultCharacterState, extractCharacterState, normalizeCharacterState } from "@/lib/character-state";
@@ -42,6 +42,7 @@ export function SheetWorkspace({
   const [saving, setSaving] = useState(false);
   const [working, setWorking] = useState(false);
   const [message, setMessage] = useState("");
+  const autoSaveIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (initialActiveSheet?.data) {
@@ -50,6 +51,63 @@ export function SheetWorkspace({
       resetSheet();
     }
   }, [initialActiveSheet, replaceSheet, resetSheet]);
+
+  // Auto-save a cada 2 minutos
+  useEffect(() => {
+    if (!activeSheetId) return;
+
+    const autoSaveInterval = setInterval(async () => {
+      setSaving(true);
+      setMessage("Salvando automaticamente...");
+
+      const snapshot = extractCharacterState(useCharStore.getState());
+      const nextName = snapshot.name.trim() || `Ficha`;
+
+      try {
+        const response = await fetch(`/api/sheets/${activeSheetId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: nextName,
+            data: snapshot,
+          }),
+        });
+        const result = await response.json().catch(() => null);
+
+        if (response.ok && result.sheet) {
+          setSheets((current) =>
+            current
+              .map((sheet) =>
+                sheet.id === activeSheetId
+                  ? { ...sheet, name: result.sheet.name, updatedAt: result.sheet.updatedAt }
+                  : sheet,
+              )
+              .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt)),
+          );
+
+          // Limpar mensagem após 1.5 segundos
+          setTimeout(() => setMessage(""), 1500);
+        } else {
+          setMessage("Erro ao salvar automaticamente.");
+          setTimeout(() => setMessage(""), 3000);
+        }
+      } catch (error) {
+        setMessage("Erro ao salvar automaticamente.");
+        setTimeout(() => setMessage(""), 3000);
+      } finally {
+        setSaving(false);
+      }
+    }, 2 * 60 * 1000); // 2 minutos
+
+    autoSaveIntervalRef.current = autoSaveInterval;
+
+    return () => {
+      if (autoSaveIntervalRef.current) {
+        clearInterval(autoSaveIntervalRef.current);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSheetId]);
 
   const activeSheet = useMemo(
     () => sheets.find((sheet) => sheet.id === activeSheetId) ?? null,
