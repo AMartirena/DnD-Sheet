@@ -45,7 +45,7 @@ export async function readSessionToken(token: string) {
 export async function setSessionCookie(payload: SessionPayload) {
   const token = await createSessionToken(payload);
 
-  cookies().set(SESSION_COOKIE, token, {
+  (await cookies()).set(SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -54,8 +54,8 @@ export async function setSessionCookie(payload: SessionPayload) {
   });
 }
 
-export function clearSessionCookie() {
-  cookies().set(SESSION_COOKIE, "", {
+export async function clearSessionCookie() {
+  (await cookies()).set(SESSION_COOKIE, "", {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -65,7 +65,7 @@ export function clearSessionCookie() {
 }
 
 export async function getCurrentSession() {
-  const token = cookies().get(SESSION_COOKIE)?.value;
+  const token = (await cookies()).get(SESSION_COOKIE)?.value;
 
   if (!token) {
     return null;

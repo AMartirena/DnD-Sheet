@@ -3,9 +3,9 @@ import { requireCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 type Params = {
-  params: {
+  params: Promise<{
     sheetId: string;
-  };
+  }>;
 };
 
 export async function GET(_request: Request, { params }: Params) {
@@ -15,9 +15,11 @@ export async function GET(_request: Request, { params }: Params) {
     return apiError("Nao autenticado.", 401);
   }
 
+  const { sheetId } = await params;
+
   const sheet = await prisma.sheet.findFirst({
     where: {
-      id: params.sheetId,
+      id: sheetId,
       userId: user.id,
     },
   });
@@ -44,6 +46,8 @@ export async function PUT(request: Request, { params }: Params) {
     return apiError("Nao autenticado.", 401);
   }
 
+  const { sheetId } = await params;
+
   const body = await request.json().catch(() => null);
   const parsed = updateSheetSchema.safeParse(body);
 
@@ -53,7 +57,7 @@ export async function PUT(request: Request, { params }: Params) {
 
   const existing = await prisma.sheet.findFirst({
     where: {
-      id: params.sheetId,
+      id: sheetId,
       userId: user.id,
     },
   });
@@ -85,9 +89,11 @@ export async function DELETE(_request: Request, { params }: Params) {
     return apiError("Nao autenticado.", 401);
   }
 
+  const { sheetId } = await params;
+
   const existing = await prisma.sheet.findFirst({
     where: {
-      id: params.sheetId,
+      id: sheetId,
       userId: user.id,
     },
     select: { id: true },
