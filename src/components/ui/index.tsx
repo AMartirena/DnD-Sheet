@@ -45,12 +45,6 @@ export function NumberInput({ className, onChange, onFocus, onBlur, value, ...pr
   const [draftValue, setDraftValue] = React.useState(value == null ? "" : String(value));
   const [isFocused, setIsFocused] = React.useState(false);
 
-  React.useEffect(() => {
-    if (!isFocused) {
-      setDraftValue(value == null ? "" : String(value));
-    }
-  }, [isFocused, value]);
-
   return (
     <input
       type="number"
@@ -67,7 +61,6 @@ export function NumberInput({ className, onChange, onFocus, onBlur, value, ...pr
       }}
       onBlur={(event) => {
         setIsFocused(false);
-        setDraftValue(value == null ? "" : String(value));
         onBlur?.(event);
       }}
       className={cn(

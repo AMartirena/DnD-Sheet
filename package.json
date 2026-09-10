@@ -11,14 +11,15 @@
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "build": "next build",
+    "postbuild": "node scripts/copy-standalone-assets.cjs",
     "start": "node .next/standalone/server.js",
     "railway:start": "npm run db:migrate:deploy && node .next/standalone/server.js",
-    "lint": "next lint",
+    "lint": "eslint .",
     "admin:list-users": "node scripts/list-users.cjs",
     "admin:reset-password": "node scripts/reset-password.cjs"
   },
   "dependencies": {
-    "@prisma/client": "^6.16.3",
+    "@prisma/client": "6.19.3",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-switch": "^1.1.0",
@@ -27,8 +28,8 @@
     "clsx": "^2.1.1",
     "jose": "^6.2.2",
     "lucide-react": "^0.383.0",
-    "next": "^16.2.7",
-    "prisma": "^6.16.3",
+    "next": "^16.3.4",
+    "prisma": "6.19.3",
     "react": "^18",
     "react-dom": "^18",
     "tailwind-merge": "^2.4.0",
@@ -42,7 +43,7 @@
     "autoprefixer": "^10.0.1",
     "eslint": "^9",
     "eslint-config-next": "^16.2.7",
-    "postcss": "^8",
+    "postcss": "^8.5.28",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
