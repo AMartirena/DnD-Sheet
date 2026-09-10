@@ -2,7 +2,7 @@
 
 Aplicacao web para montar e acompanhar fichas de personagem de Dungeons & Dragons 5a Edicao, com foco em uso de mesa, edicao rapida, autenticacao por email e multiplas fichas salvas por usuario.
 
-O projeto foi construido com Next.js 14, React 18, TypeScript, Tailwind CSS e Zustand.
+O projeto foi construido com Next.js 16, React 18, TypeScript, Tailwind CSS e Zustand.
 
 Criado especialmente para o RPG Z1K4
 
@@ -26,7 +26,7 @@ O projeto agora combina estado local no navegador para a ficha ativa com persist
 
 ## Stack
 
-- Next.js 14
+- Next.js 16
 - React 18
 - TypeScript
 - Tailwind CSS
@@ -41,7 +41,7 @@ O projeto agora combina estado local no navegador para a ficha ativa com persist
 
 Pre-requisitos:
 
-- Node.js 18 ou superior
+- Node.js 20.9 ou superior
 - npm
 
 Instalacao e desenvolvimento:
@@ -567,6 +567,7 @@ Se quiser configurar manualmente no Railway:
 
 - SQLite nao e apropriado aqui porque o filesystem do host nao deve ser tratado como banco persistente
 - o `output: "standalone"` do Next ajuda a gerar um build mais enxuto para o deploy
+- o build copia `public/` e `.next/static/` para o artefato standalone antes do inicio
 - antes do primeiro acesso, o Railway vai aplicar as migrations na inicializacao do servico web
 
 ## Licenca

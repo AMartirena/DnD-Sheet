@@ -48,7 +48,7 @@ export async function setSessionCookie(payload: SessionPayload) {
   (await cookies()).set(SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     path: "/",
     maxAge: SESSION_MAX_AGE_SECONDS,
   });
@@ -58,7 +58,7 @@ export async function clearSessionCookie() {
   (await cookies()).set(SESSION_COOKIE, "", {
     httpOnly: true,
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     path: "/",
     maxAge: 0,
   });

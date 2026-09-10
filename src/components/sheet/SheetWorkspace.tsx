@@ -107,7 +107,6 @@ export function SheetWorkspace({
         clearInterval(autoSaveIntervalRef.current);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSheetId]);
 
   const activeSheet = useMemo(
