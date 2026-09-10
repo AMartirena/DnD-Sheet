@@ -4,6 +4,8 @@ Aplicacao web para montar e acompanhar fichas de personagem de Dungeons & Dragon
 
 O projeto foi construido com Next.js 14, React 18, TypeScript, Tailwind CSS e Zustand.
 
+Criado especialmente para o RPG Z1K4
+
 ## Visao Geral
 
 Esta ficha foi evoluida para funcionar como uma folha completa e editavel, com:
