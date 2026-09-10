@@ -6,6 +6,7 @@ import type {
   SpellEntry,
   SpellcastingProfile,
   SpellLevelState,
+  InventoryEntry,
 } from "@/types";
 
 const DEFAULT_ATTRS: Record<AttrKey, number> = {
@@ -89,6 +90,18 @@ function normalizeConsumableAbility(input: unknown): ConsumableAbilityEntry {
   };
 }
 
+function normalizeInventoryItem(input: unknown): InventoryEntry {
+  const data = (input && typeof input === "object" ? input : {}) as Partial<InventoryEntry>;
+
+  return {
+    id: data.id ?? `item_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    name: data.name ?? "",
+    quantity: Math.max(0, data.quantity ?? 1),
+    weight: data.weight ?? "",
+    notes: data.notes ?? "",
+  };
+}
+
 export function createDefaultCharacterState(): CharacterState {
   return {
     name: "",
@@ -139,6 +152,7 @@ export function createDefaultCharacterState(): CharacterState {
     equipment: "",
     abilities: "",
     inventory: "",
+    inventoryItems: [],
     generalNotes: "",
     bonusActions: [],
     reactions: [],
@@ -185,6 +199,11 @@ export function normalizeCharacterState(input: unknown): CharacterState {
     consumableAbilities: Array.isArray(data.consumableAbilities)
       ? data.consumableAbilities.map(normalizeConsumableAbility)
       : fallback.consumableAbilities,
+    inventoryItems: Array.isArray(data.inventoryItems)
+      ? data.inventoryItems.map(normalizeInventoryItem)
+      : data.inventory?.trim()
+        ? [{ id: `item_legacy_${Date.now()}`, name: "", quantity: 1, weight: "", notes: data.inventory }]
+        : fallback.inventoryItems,
     racialAbilities: Array.isArray(data.racialAbilities) ? data.racialAbilities : fallback.racialAbilities,
     racialNotes: typeof data.racialNotes === "string" ? data.racialNotes : fallback.racialNotes,
     subclassPanels: Array.isArray(data.subclassPanels) ? data.subclassPanels : fallback.subclassPanels,

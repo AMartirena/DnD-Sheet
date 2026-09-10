@@ -1,7 +1,7 @@
 "use client";
 import { useLayoutEffect, useRef, useState } from "react";
 import { useCharStore } from "@/lib/store";
-import { SectionTitle, FieldLabel, NumberInput, SelectInput } from "@/components/ui";
+import { SectionTitle, FieldLabel, NumberInput, SelectInput, AddRowButton, DeleteButton } from "@/components/ui";
 import type { CoinType } from "@/types";
 
 function TextArea({ value, onChange, placeholder, rows = 5 }: {
@@ -76,13 +76,71 @@ export function NotesSection() {
       </div>
 
       <div className="bg-parchment-200/60 border border-dnd-border rounded p-3 mb-4">
-        <div className="text-[9px] tracking-[2px] uppercase text-dnd-red font-semibold mb-2">Inventário</div>
-        <TextArea
-          value={store.inventory}
-          onChange={(v) => store.setField("inventory", v)}
-          placeholder="Kits do antecedente, ferramentas, consumíveis e outros itens carregados que não entram como equipamento principal."
-          rows={5}
-        />
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <div>
+            <div className="text-[9px] tracking-[2px] uppercase text-dnd-red font-semibold">Inventário</div>
+            <div className="text-[10px] text-ink-light mt-1">Poções, munições, ferramentas e outros itens carregados.</div>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[700px] text-[13px]">
+            <thead>
+              <tr>
+                {["Nome", "Qtd.", "Peso", "Observações", ""].map((heading) => (
+                  <th key={heading} className="text-[9px] tracking-[2px] uppercase text-dnd-red font-semibold border-b border-dnd-border pb-1 px-2 text-left bg-dnd-red/5">
+                    {heading}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {store.inventoryItems.map((item) => (
+                <tr key={item.id} className="border-b border-dnd-border/30 last:border-0 hover:bg-parchment-100/50">
+                  <td className="px-2 py-1.5 min-w-[170px]">
+                    <input
+                      type="text"
+                      value={item.name}
+                      placeholder="Nome do item"
+                      onChange={(event) => store.updateInventoryItem(item.id, { name: event.target.value })}
+                      className="w-full bg-transparent border-0 border-b border-transparent font-serif text-[13px] text-ink outline-none focus:border-dnd-border transition-colors p-0.5"
+                    />
+                  </td>
+                  <td className="px-2 py-1.5 w-20">
+                    <input
+                      type="number"
+                      min={0}
+                      value={item.quantity}
+                      onChange={(event) => store.updateInventoryItem(item.id, { quantity: Math.max(0, parseInt(event.target.value, 10) || 0) })}
+                      className="w-14 bg-transparent border-b border-dnd-border font-display text-[16px] text-ink text-center outline-none focus:border-dnd-red [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                  </td>
+                  <td className="px-2 py-1.5 w-24">
+                    <input
+                      type="text"
+                      value={item.weight}
+                      placeholder="Ex: 0,5 kg"
+                      onChange={(event) => store.updateInventoryItem(item.id, { weight: event.target.value })}
+                      className="w-full bg-transparent border-0 border-b border-transparent font-serif text-[12px] text-ink outline-none focus:border-dnd-border transition-colors p-0.5"
+                    />
+                  </td>
+                  <td className="px-2 py-1.5 min-w-[200px]">
+                    <input
+                      type="text"
+                      value={item.notes}
+                      placeholder="Efeito, origem, carga..."
+                      onChange={(event) => store.updateInventoryItem(item.id, { notes: event.target.value })}
+                      className="w-full bg-transparent border-0 border-b border-transparent font-serif text-[12px] text-ink-light outline-none focus:border-dnd-border transition-colors p-0.5"
+                    />
+                  </td>
+                  <td className="px-1 py-1.5 w-8">
+                    <DeleteButton onClick={() => store.removeInventoryItem(item.id)} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <AddRowButton onClick={store.addInventoryItem}>+ Adicionar item</AddRowButton>
       </div>
 
       <div className="bg-parchment-200/60 border border-dnd-border rounded p-3 mb-4">
