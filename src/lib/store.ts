@@ -4,7 +4,7 @@ import { createDefaultCharacterState, normalizeCharacterState } from "@/lib/char
 import type {
   CharacterState, AttrKey, ArmorProfType, ProfLevel,
   ArmorEntry, AttackEntry, CharClass,
-  WeaponProfType, CoinType, CurrencyState, TraitEntry, ConsumableAbilityEntry,
+  WeaponProfType, CoinType, CurrencyState, TraitEntry, ConsumableAbilityEntry, InventoryEntry,
 } from "@/types";
 
 const COIN_VALUES_CP: Record<CoinType, number> = {
@@ -131,6 +131,11 @@ interface Store extends CharacterState {
   updateConsumableAbility: (id: string, patch: Partial<ConsumableAbilityEntry>) => void;
   removeConsumableAbility: (id: string) => void;
 
+  // Inventory
+  addInventoryItem: () => void;
+  updateInventoryItem: (id: string, patch: Partial<InventoryEntry>) => void;
+  removeInventoryItem: (id: string) => void;
+
   // Proficiencies
   toggleArmorProf: (key: ArmorProfType) => void;
   toggleWeaponProf: (key: WeaponProfType) => void;
@@ -253,6 +258,22 @@ export const useCharStore = create<Store>()(
 
       removeAttack: (id) =>
         set((s) => ({ attacks: s.attacks.filter((a) => a.id !== id) })),
+
+      addInventoryItem: () =>
+        set((s) => ({
+          inventoryItems: [
+            ...s.inventoryItems,
+            { id: uid("item"), name: "", quantity: 1, weight: "", notes: "" },
+          ],
+        })),
+
+      updateInventoryItem: (id, patch) =>
+        set((s) => ({
+          inventoryItems: s.inventoryItems.map((item) => (item.id === id ? { ...item, ...patch } : item)),
+        })),
+
+      removeInventoryItem: (id) =>
+        set((s) => ({ inventoryItems: s.inventoryItems.filter((item) => item.id !== id) })),
 
       addBonusAction: () =>
         set((s) => ({

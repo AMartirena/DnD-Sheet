@@ -48,6 +48,14 @@ export interface AttackEntry {
   notes: string;
 }
 
+export interface InventoryEntry {
+  id: string;
+  name: string;
+  quantity: number;
+  weight: string;
+  notes: string;
+}
+
 // ─── Racial ASI map ───────────────────────────────────────────────────────
 export type RacialASI = Partial<Record<AttrKey, number>>;
 
@@ -184,6 +192,7 @@ export interface CharacterState {
   equipment: string;
   abilities: string;
   inventory: string;
+  inventoryItems: InventoryEntry[];
   generalNotes: string;
   bonusActions: TraitEntry[];
   reactions: TraitEntry[];
