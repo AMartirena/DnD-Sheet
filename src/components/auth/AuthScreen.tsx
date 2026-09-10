@@ -22,6 +22,7 @@ export function AuthScreen() {
     const response = await fetch(`/api/auth/${mode === "login" ? "login" : "register"}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({
         name: mode === "register" ? name : undefined,
         email,

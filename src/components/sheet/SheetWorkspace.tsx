@@ -67,6 +67,7 @@ export function SheetWorkspace({
         const response = await fetch(`/api/sheets/${activeSheetId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({
             name: nextName,
             data: snapshot,
@@ -121,6 +122,7 @@ export function SheetWorkspace({
     const response = await fetch("/api/sheets", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify(data ? { name, data } : { name }),
     });
     const result = await response.json().catch(() => null);
@@ -136,7 +138,7 @@ export function SheetWorkspace({
     setLoadingSheetId(sheetId);
     setMessage("");
 
-    const response = await fetch(`/api/sheets/${sheetId}`);
+    const response = await fetch(`/api/sheets/${sheetId}`, { credentials: "include" });
     const result = await response.json().catch(() => null);
 
     if (!response.ok) {
@@ -190,6 +192,7 @@ export function SheetWorkspace({
     const response = await fetch(`/api/sheets/${activeSheetId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ name: nextName }),
     });
     const result = await response.json().catch(() => null);
@@ -231,6 +234,7 @@ export function SheetWorkspace({
     const createResponse = await fetch("/api/sheets", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ name: duplicateName }),
     });
     const createdResult = await createResponse.json().catch(() => null);
@@ -245,6 +249,7 @@ export function SheetWorkspace({
     const saveResponse = await fetch(`/api/sheets/${duplicateId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({
         name: duplicateName,
         data: snapshot,
@@ -296,6 +301,7 @@ export function SheetWorkspace({
     const response = await fetch(`/api/sheets/${activeSheetId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({
         name: nextName,
         data: snapshot,
@@ -327,7 +333,7 @@ export function SheetWorkspace({
     const confirmed = window.confirm(`Excluir a ficha \"${activeSheet.name}\"?`);
     if (!confirmed) return;
 
-    const response = await fetch(`/api/sheets/${activeSheetId}`, { method: "DELETE" });
+    const response = await fetch(`/api/sheets/${activeSheetId}`, { method: "DELETE", credentials: "include" });
     const result = await response.json().catch(() => null);
 
     if (!response.ok) {
@@ -349,7 +355,7 @@ export function SheetWorkspace({
   };
 
   const logout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
+    await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
     router.refresh();
   };
 
