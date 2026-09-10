@@ -556,7 +556,7 @@ O repositorio inclui suporte para deploy com:
 
 - build padrao do Next.js
 - migracao via `prisma migrate deploy`
-- runtime via `next start`
+- runtime via `node .next/standalone/server.js`
 
 Se quiser configurar manualmente no Railway:
 
